@@ -33,6 +33,7 @@ public class UsuarioController {
     ) throws Exception {
         log.info("POST /cadastro -> Novo Usuario ");
 
+        String actualToken = authToken.substring(7);
         UsuarioEntity newUser = new UsuarioEntity();
         newUser.setNome(nuRequest.nome());
         newUser.setLogin(nuRequest.login());
@@ -41,7 +42,7 @@ public class UsuarioController {
                 papelService.getPapelById(nuRequest.idPapel())
         );
 
-        NovoUsuarioResponse response = usuarioService.novoUsuario(newUser, authToken);
+        NovoUsuarioResponse response = usuarioService.novoUsuario(newUser, actualToken);
         if (response.success()){
             log.info("POST /cadastro -> Usuário cadastrado com sucesso.");
         } else {
