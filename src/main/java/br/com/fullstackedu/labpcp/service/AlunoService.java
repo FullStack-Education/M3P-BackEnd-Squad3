@@ -177,4 +177,8 @@ public class AlunoService {
             return new AlunoResponse(true, LocalDateTime.now() , "Docente id [" + alunoId + "] excluido" , null, HttpStatus.NO_CONTENT);
         }
     }
+
+    public long count() {
+        return alunoRepository.count();
+    }
 }

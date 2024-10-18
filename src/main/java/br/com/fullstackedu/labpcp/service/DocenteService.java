@@ -160,4 +160,8 @@ public class DocenteService {
             return new NovoDocenteResponse(true, LocalDateTime.now() , "Docente id [" + docenteId + "] excluido" , null, HttpStatus.NO_CONTENT);
         }
     }
+
+    public long count() {
+        return docenteRepository.count();
+    }
 }
