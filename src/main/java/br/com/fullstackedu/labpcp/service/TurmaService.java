@@ -192,4 +192,8 @@ public class TurmaService {
         }
 
     }
+
+    public long count() {
+        return turmaRepository.count();
+    }
 }
