@@ -1,10 +1,11 @@
 package br.com.fullstackedu.labpcp.controller.dto.response;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import org.springframework.http.HttpStatus;
 
 import java.time.LocalDateTime;
 import java.util.List;
-
+@Schema(description = "Objeto de resposta da média do aluno")
 public record AlunoScoreResponse(
         Boolean success,
         LocalDateTime timestamp,

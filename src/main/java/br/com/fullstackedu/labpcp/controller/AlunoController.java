@@ -9,10 +9,16 @@ import br.com.fullstackedu.labpcp.controller.dto.response.AlunoScoreResponse;
 import br.com.fullstackedu.labpcp.controller.dto.response.NotaResponse;
 import br.com.fullstackedu.labpcp.service.AlunoService;
 import br.com.fullstackedu.labpcp.service.NotaService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -22,11 +28,22 @@ import org.springframework.web.bind.annotation.*;
 @Slf4j
 @Validated
 @RequiredArgsConstructor
+@Tag(name = "Aluno - CRUD", description = "CRUD de alunos")
 public class AlunoController {
     private final AlunoService alunoService;
     private final NotaService notaService;
 
+    @Operation(summary = "Cadastrar novo aluno")
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "201",
+                    description = "Aluno cadastrado",
+                    useReturnTypeSchema = true
+            ),
+    })
+
     @PostMapping()
+    @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<AlunoResponse> insertAluno(
             @RequestHeader(name = "Authorization") String authToken,
             @Valid @RequestBody AlunoRequest alunoRequest
@@ -42,9 +59,18 @@ public class AlunoController {
         }
         return ResponseEntity.status(response.httpStatus()).body(response);
     }
+    @Operation(summary = "Buscar aluno por ID")
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Aluno encontrado",
+                    useReturnTypeSchema = true
+            ),
+    })
 
     @GetMapping("/{alunoId}")
     public ResponseEntity<AlunoResponse> getById(
+            @Parameter(description = "ID do aluno", example = "1")
             @RequestHeader(name = "Authorization") String authToken,
             @Valid @PathVariable Long alunoId) {
         log.info("GET /alunos/{} ", alunoId);
@@ -57,9 +83,18 @@ public class AlunoController {
         }
         return ResponseEntity.status(response.httpStatus()).body(response);
     }
+    @Operation(summary = "Editar aluno por ID")
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Aluno alterado",
+                    useReturnTypeSchema = true
+            ),
+    })
 
     @PutMapping("/{alunoId}")
     public ResponseEntity<AlunoResponse> updateAluno(
+            @Parameter(description = "ID do aluno", example = "1")
             @PathVariable Long alunoId,
             @Valid @RequestBody AlunoUpdateRequest alunoUpdateRequest,
             @RequestHeader(name = "Authorization") String authToken) {
@@ -73,6 +108,14 @@ public class AlunoController {
         }
         return ResponseEntity.status(response.httpStatus()).body(response);
     }
+    @Operation(summary = "Buscar todos os alunos")
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Alunos encontrados",
+                    useReturnTypeSchema = true
+            ),
+    })
 
     @GetMapping()
     public ResponseEntity<AlunoResponse> getAllAlunos(
@@ -88,8 +131,18 @@ public class AlunoController {
         return ResponseEntity.status(response.httpStatus()).body(response);
     }
 
+    @Operation(summary = "Buscar notas por aluno")
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Nota encontrada",
+                    useReturnTypeSchema = true
+            ),
+    })
+
     @GetMapping("/{alunoId}/notas")
     public ResponseEntity<NotaResponse> getNotasByAlunoId(
+            @Parameter(description = "ID do aluno", example = "1")
             @RequestHeader(name = "Authorization") String authToken,
             @Valid @PathVariable Long alunoId) {
         log.info("GET /alunos/{}/notas ", alunoId);
@@ -102,9 +155,18 @@ public class AlunoController {
         }
         return ResponseEntity.status(response.httpStatus()).body(response);
     }
+    @Operation(summary = "Excluir aluno por ID")
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "204",
+                    description = "Aluno excluído"
+            ),
+    })
 
     @DeleteMapping("/{alunoId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public ResponseEntity<AlunoResponse> deleteAluno(
+            @Parameter(description = "ID do aluno", example = "1")
             @PathVariable @NotNull(message = "ID da aluno é requerido para exclusão") Long alunoId,
             @RequestHeader(name = "Authorization") String authToken) {
         log.info("DELETE /alunos");
@@ -118,8 +180,18 @@ public class AlunoController {
         return ResponseEntity.status(response.httpStatus()).body(response);
     }
 
+    @Operation(summary = "Buscar média por ID aluno")
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Média encontrada",
+                    useReturnTypeSchema = true
+            ),
+    })
+
     @GetMapping("/{alunoId}/pontuacao")
     public ResponseEntity<AlunoScoreResponse> getScoreByAlunoId(
+            @Parameter(description = "ID do aluno", example = "1")
             @PathVariable Long alunoId,
             @RequestHeader(name = "Authorization") String authToken) {
 

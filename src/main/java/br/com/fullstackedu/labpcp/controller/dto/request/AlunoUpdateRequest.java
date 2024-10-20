@@ -1,11 +1,13 @@
 package br.com.fullstackedu.labpcp.controller.dto.request;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.AssertTrue;
 
 import java.time.LocalDate;
 import java.util.Objects;
 
+@Schema(description = "Objeto de edição do aluno")
 public record AlunoUpdateRequest(
         String nome,
 

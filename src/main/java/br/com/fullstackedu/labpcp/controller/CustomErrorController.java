@@ -2,6 +2,11 @@ package br.com.fullstackedu.labpcp.controller;
 
 
 import br.com.fullstackedu.labpcp.controller.dto.response.CustomErrorResponse;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,7 +24,16 @@ import java.util.stream.Collectors;
 
 @ControllerAdvice
 @Slf4j
+@Tag(name = "Exceções", description = "Tratamento de exceções")
 public class CustomErrorController {
+
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "400",
+                    description = "Requisição inválida. A requisição não pode estar vazia.",
+                    content = @Content(schema = @Schema(implementation = CustomErrorResponse.class))
+            ),
+    })
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseBody
@@ -37,6 +51,14 @@ public class CustomErrorController {
         return ResponseEntity.badRequest().body(response);
     }
 
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "400",
+                    description = "Requisição inválida. O formato do corpo da requisição está incorreto ou não pôde ser lido.",
+                    content = @Content(schema = @Schema(implementation = CustomErrorResponse.class))
+            ),
+    })
+
     @ExceptionHandler(HttpMessageNotReadableException.class)
     @ResponseBody
     public ResponseEntity<CustomErrorResponse> handleInvalidValueException(HttpMessageNotReadableException ex) {
@@ -47,6 +69,14 @@ public class CustomErrorController {
         response.setTimestamp(LocalDateTime.now());
         return ResponseEntity.badRequest().body(response);
     }
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "400",
+                    description = "Requisição inválida. O argumento passado é inválido.",
+                    content = @Content(schema = @Schema(implementation = CustomErrorResponse.class))
+            ),
+    })
+
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     @ResponseBody
     public ResponseEntity<CustomErrorResponse> handleMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException ex) {
