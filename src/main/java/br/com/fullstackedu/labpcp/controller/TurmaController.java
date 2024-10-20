@@ -66,8 +66,8 @@ public class TurmaController {
 
     @GetMapping("/{turmaId}")
     public ResponseEntity<TurmaCreateResponse> getTurmaById(
-            @Parameter(description = "ID da turma", example = "1")
             @RequestHeader(name = "Authorization") String authToken,
+            @Parameter(description = "ID da turma", example = "1")
             @Valid @PathVariable Long turmaId) {
         log.info("GET /turmas/{} ", turmaId);
         String actualToken = authToken.substring(7);

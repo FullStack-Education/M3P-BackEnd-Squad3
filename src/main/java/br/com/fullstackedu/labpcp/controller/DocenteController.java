@@ -66,8 +66,8 @@ public class DocenteController {
 
     @GetMapping("/{docenteId}")
     public ResponseEntity<NovoDocenteResponse> getDocenteById(
-            @Parameter(description = "ID do docente", example = "1")
             @RequestHeader(name = "Authorization") String authToken,
+            @Parameter(description = "ID do docente", example = "1")
             @Valid @PathVariable Long docenteId) {
         log.info("GET /docente/{} ", docenteId);
         String actualToken = authToken.substring(7);

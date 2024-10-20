@@ -64,8 +64,8 @@ public class CursoController {
     })
     @GetMapping("/{cursoId}")
     public ResponseEntity<CursoResponse> getById(
-            @Parameter(description = "ID do curso", example = "1")
             @RequestHeader(name = "Authorization") String authToken,
+            @Parameter(description = "ID do curso", example = "1")
             @Valid @PathVariable Long cursoId) {
         log.info("GET /cursos/{} ", cursoId);
         String actualToken = authToken.substring(7);
@@ -110,8 +110,8 @@ public class CursoController {
 
     @GetMapping("/{cursoId}/materias")
     public ResponseEntity<MateriaResponse> getMateriasByCursoId(
-            @Parameter(description = "ID do curso", example = "1")
             @RequestHeader(name = "Authorization") String authToken,
+            @Parameter(description = "ID do curso", example = "1")
             @Valid @PathVariable Long cursoId) {
         log.info("GET /cursos/{}/materias ", cursoId);
         String actualToken = authToken.substring(7);

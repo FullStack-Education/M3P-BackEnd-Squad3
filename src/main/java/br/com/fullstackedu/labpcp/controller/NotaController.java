@@ -66,8 +66,8 @@ public class NotaController {
 
     @GetMapping("/{notaId}")
     public ResponseEntity<NotaResponse> getDocenteById(
-            @Parameter(description = "ID da nota", example = "1")
             @RequestHeader(name = "Authorization") String authToken,
+            @Parameter(description = "ID da nota", example = "1")
             @Valid @PathVariable Long notaId) {
         log.info("GET /notas/{} ", notaId);
         String actualToken = authToken.substring(7);

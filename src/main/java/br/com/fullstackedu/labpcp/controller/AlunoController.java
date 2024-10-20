@@ -70,8 +70,8 @@ public class AlunoController {
 
     @GetMapping("/{alunoId}")
     public ResponseEntity<AlunoResponse> getById(
-            @Parameter(description = "ID do aluno", example = "1")
             @RequestHeader(name = "Authorization") String authToken,
+            @Parameter(description = "ID do aluno", example = "1")
             @Valid @PathVariable Long alunoId) {
         log.info("GET /alunos/{} ", alunoId);
         String actualToken = authToken.substring(7);
