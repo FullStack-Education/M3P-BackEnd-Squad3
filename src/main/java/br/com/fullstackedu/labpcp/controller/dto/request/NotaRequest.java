@@ -1,10 +1,11 @@
 package br.com.fullstackedu.labpcp.controller.dto.request;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalDate;
-
+@Schema(description = "Objeto de criação da nota")
 public record NotaRequest (
         @NotNull(message = "Atributo id_aluno é obrigatório")
         Long id_aluno,

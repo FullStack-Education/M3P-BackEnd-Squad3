@@ -1,9 +1,10 @@
 package br.com.fullstackedu.labpcp.controller.dto.request;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.AssertTrue;
 
 import java.util.Objects;
-
+@Schema(description = "Objeto de edição da turma")
 public record TurmaUpdateRequest(
     String nome,
     Long id_curso,
