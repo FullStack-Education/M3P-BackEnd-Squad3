@@ -53,6 +53,7 @@ public class InitService {
 
         //professores
         log.info("InitService -> Cria profesores");
+
         Long[] idProfessores = new Long[]{id++,id++,id++,id++,id++,id++};
         insertIfNotExistsUsuarioEntity(idProfessores[0], "eduardo@mail.com", "professor","PROFESSOR" );
         insertIfNotExistsUsuarioEntity(idProfessores[1], "gabriel@mail.com", "professor","PROFESSOR" );
@@ -60,5 +61,14 @@ public class InitService {
         insertIfNotExistsUsuarioEntity(idProfessores[3], "joaoPaulo@mail.com", "professor","PROFESSOR" );
         insertIfNotExistsUsuarioEntity(idProfessores[4], "duda@mail.com", "professor","PROFESSOR" );
 
+        //alunos
+        log.info("InitService -> Cria Alunos");
+        Long[] idAlunos = new Long[]{id++,id++,id++,id++,id++,id++};
+        insertIfNotExistsUsuarioEntity(idAlunos[0], "joao@mail.com", "aluno","ALUNO" );
+        insertIfNotExistsUsuarioEntity(idAlunos[1], "maria@mail.com", "aluno","ALUNO" );
+        insertIfNotExistsUsuarioEntity(idAlunos[2], "jose@mail.com", "aluno","ALUNO" );
+        insertIfNotExistsUsuarioEntity(idAlunos[3], "fabio@mail.com", "aluno","ALUNO" );
+        insertIfNotExistsUsuarioEntity(idAlunos[4], "oto@mail.com", "aluno","ALUNO" );
+        insertIfNotExistsUsuarioEntity(idAlunos[5], "alice@mail.com", "aluno","ALUNO" );
     }
 }
