@@ -1,17 +1,15 @@
 package br.com.fullstackedu.labpcp.service;
 
-import br.com.fullstackedu.labpcp.database.entity.CursoEntity;
-import br.com.fullstackedu.labpcp.database.entity.MateriaEntity;
-import br.com.fullstackedu.labpcp.database.entity.UsuarioEntity;
-import br.com.fullstackedu.labpcp.database.repository.CursoRepository;
-import br.com.fullstackedu.labpcp.database.repository.MateriaRepository;
-import br.com.fullstackedu.labpcp.database.repository.PapelRepository;
-import br.com.fullstackedu.labpcp.database.repository.UsuarioRepository;
+import br.com.fullstackedu.labpcp.database.entity.*;
+import br.com.fullstackedu.labpcp.database.repository.*;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.webjars.NotFoundException;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Service
 @Slf4j
@@ -22,18 +20,20 @@ public class InitService {
     private final BCryptPasswordEncoder bCryptEncoder;
     private final CursoRepository cursoRepository;
     private final MateriaRepository materiaRepository;
+    private final DocenteRepository docenteRepository;
 
-    public InitService(UsuarioRepository usuarioRepository, PapelRepository papelRepository, BCryptPasswordEncoder bCryptEncoder, CursoRepository cursoRepository, MateriaRepository materiaRepository) {
+    public InitService(UsuarioRepository usuarioRepository, PapelRepository papelRepository, BCryptPasswordEncoder bCryptEncoder, CursoRepository cursoRepository, MateriaRepository materiaRepository, DocenteRepository docenteRepository) {
         this.usuarioRepository = usuarioRepository;
         this.papelRepository = papelRepository;
         this.bCryptEncoder = bCryptEncoder;
         this.cursoRepository = cursoRepository;
         this.materiaRepository = materiaRepository;
+        this.docenteRepository = docenteRepository;
     }
 
     private void insertIfNotExistsUsuarioEntity(Long id, String login, String senha, String papel) throws Exception {
         if (usuarioRepository.findByLogin(login).isEmpty()) {
-            log.info("InitService -> Inserindo o usuário [{}] ", login);
+            log.info("InitService -> Inserindo o docente [{}] ", login);
             UsuarioEntity newUser = new UsuarioEntity();
             newUser.setId(id);
             newUser.setLogin(login);
@@ -70,6 +70,21 @@ public class InitService {
         }
     }
 
+    private void insertIfNotExistsProfessorEntity(Long id, String nome, String loginUsuario) throws Exception {
+        if (docenteRepository.findByNome(nome).isEmpty()) {
+            log.info("InitService -> Inserindo a professor [{}] ", nome);
+            var entity = new DocenteEntity();
+            entity.setId(id);
+            entity.setNome(nome);
+            entity.setDataEntrada(LocalDate.now());
+            var papel = papelRepository.findByNome("PROFESSOR").orElseThrow(() -> new RuntimeException("Papel não encotrado"));
+            var curso = usuarioRepository.findByLoginAndPapelId(loginUsuario,papel.getId()).orElseThrow(() -> new NotFoundException("Usuario não encontrado"));
+            entity.setUsuario(curso);
+            docenteRepository.save(entity);
+        }
+    }
+
+
 
     @PostConstruct
     public void initUsuarios() throws Exception {
@@ -86,48 +101,48 @@ public class InitService {
         //professores
         log.info("InitService -> Cria profesores");
         int index = 0;
-        String[] nomesProfessores = new String[]{"eduardo@mail.com",
+        String[] emailProfessores = new String[]{"eduardo@mail.com",
                 "gabriel@mail.com",
                 "ray@mail.com",
                 "joaoPaulo@mail.com",
                 "duda@mail.com"};
-        insertIfNotExistsUsuarioEntity(id++, nomesProfessores[index++], "professor", "PROFESSOR");
-        insertIfNotExistsUsuarioEntity(id++, nomesProfessores[index++], "professor", "PROFESSOR");
-        insertIfNotExistsUsuarioEntity(id++, nomesProfessores[index++], "professor", "PROFESSOR");
-        insertIfNotExistsUsuarioEntity(id++, nomesProfessores[index++], "professor", "PROFESSOR");
-        insertIfNotExistsUsuarioEntity(id++, nomesProfessores[index++], "professor", "PROFESSOR");
+        insertIfNotExistsUsuarioEntity(id++, emailProfessores[index++], "professor", "PROFESSOR");
+        insertIfNotExistsUsuarioEntity(id++, emailProfessores[index++], "professor", "PROFESSOR");
+        insertIfNotExistsUsuarioEntity(id++, emailProfessores[index++], "professor", "PROFESSOR");
+        insertIfNotExistsUsuarioEntity(id++, emailProfessores[index++], "professor", "PROFESSOR");
+        insertIfNotExistsUsuarioEntity(id++, emailProfessores[index++], "professor", "PROFESSOR");
 
         //alunos
         log.info("InitService -> Cria Alunos");
-        String[] idAlunos = new String[]{"joao@mail.com",
+        String[] emailAlunos = new String[]{"joao@mail.com",
                 "maria@mail.com",
                 "jose@mail.com",
                 "fabio@mail.com",
                 "oto@mail.com",
                 "alice@mail.com"};
         index = 0;
-        insertIfNotExistsUsuarioEntity(id++, idAlunos[index++], "aluno", "ALUNO");
-        insertIfNotExistsUsuarioEntity(id++, idAlunos[index++], "aluno", "ALUNO");
-        insertIfNotExistsUsuarioEntity(id++, idAlunos[index++], "aluno", "ALUNO");
-        insertIfNotExistsUsuarioEntity(id++, idAlunos[index++], "aluno", "ALUNO");
-        insertIfNotExistsUsuarioEntity(id++, idAlunos[index++], "aluno", "ALUNO");
-        insertIfNotExistsUsuarioEntity(id++, idAlunos[index++], "aluno", "ALUNO");
+        insertIfNotExistsUsuarioEntity(id++, emailAlunos[index++], "aluno", "ALUNO");
+        insertIfNotExistsUsuarioEntity(id++, emailAlunos[index++], "aluno", "ALUNO");
+        insertIfNotExistsUsuarioEntity(id++, emailAlunos[index++], "aluno", "ALUNO");
+        insertIfNotExistsUsuarioEntity(id++, emailAlunos[index++], "aluno", "ALUNO");
+        insertIfNotExistsUsuarioEntity(id++, emailAlunos[index++], "aluno", "ALUNO");
+        insertIfNotExistsUsuarioEntity(id++, emailAlunos[index++], "aluno", "ALUNO");
 
-        String[] idCurso = new String[]{"FrontEnd",
+        String[] nomeCursos = new String[]{"FrontEnd",
                 "BackEnd",
                 "FullStack",
                 "Dados",
                 "Inteligencia Ariticial",
                 "Experiencia do Usuario"};
         index = 0;
-        insertIfNotExistsCursoEntity(id++, idCurso[index++]);
-        insertIfNotExistsCursoEntity(id++, idCurso[index++]);
-        insertIfNotExistsCursoEntity(id++, idCurso[index++]);
-        insertIfNotExistsCursoEntity(id++, idCurso[index++]);
-        insertIfNotExistsCursoEntity(id++, idCurso[index++]);
-        insertIfNotExistsCursoEntity(id++, idCurso[index++]);
+        insertIfNotExistsCursoEntity(id++, nomeCursos[index++]);
+        insertIfNotExistsCursoEntity(id++, nomeCursos[index++]);
+        insertIfNotExistsCursoEntity(id++, nomeCursos[index++]);
+        insertIfNotExistsCursoEntity(id++, nomeCursos[index++]);
+        insertIfNotExistsCursoEntity(id++, nomeCursos[index++]);
+        insertIfNotExistsCursoEntity(id++, nomeCursos[index++]);
 
-        String[] idMateria = new String[]{"Introdução ao Design Responsivo",
+        String[] nomeMaterias = new String[]{"Introdução ao Design Responsivo",
                 "JavaScript Avançado",
                 "Desenvolvimento com React/Vue/Angular",
                 "Criação de APIs RESTful",
@@ -146,23 +161,36 @@ public class InitService {
                 "Teste de Usabilidade",
                 "Acessibilidade Digital"};
         index = 0;
-        insertIfNotExistsMateriaEntity(id++,idMateria[index++], idCurso[0]);
-        insertIfNotExistsMateriaEntity(id++,idMateria[index++], idCurso[0]);
-        insertIfNotExistsMateriaEntity(id++,idMateria[index++], idCurso[0]);
-        insertIfNotExistsMateriaEntity(id++,idMateria[index++], idCurso[1]);
-        insertIfNotExistsMateriaEntity(id++,idMateria[index++],idCurso[1] );
-        insertIfNotExistsMateriaEntity(id++,idMateria[index++],idCurso[1] );
-        insertIfNotExistsMateriaEntity(id++,idMateria[index++], idCurso[2]);
-        insertIfNotExistsMateriaEntity(id++,idMateria[index++], idCurso[2]);
-        insertIfNotExistsMateriaEntity(id++,idMateria[index++], idCurso[2]);
-        insertIfNotExistsMateriaEntity(id++,idMateria[index++], idCurso[3]);
-        insertIfNotExistsMateriaEntity(id++,idMateria[index++], idCurso[3]);
-        insertIfNotExistsMateriaEntity(id++,idMateria[index++], idCurso[3]);
-        insertIfNotExistsMateriaEntity(id++,idMateria[index++], idCurso[4]);
-        insertIfNotExistsMateriaEntity(id++,idMateria[index++], idCurso[4]);
-        insertIfNotExistsMateriaEntity(id++,idMateria[index++], idCurso[4]);
-        insertIfNotExistsMateriaEntity(id++,idMateria[index++], idCurso[5]);
-        insertIfNotExistsMateriaEntity(id++,idMateria[index++], idCurso[5]);
-        insertIfNotExistsMateriaEntity(id++,idMateria[index++], idCurso[5]);
+        insertIfNotExistsMateriaEntity(id++,nomeMaterias[index++], nomeCursos[0]);
+        insertIfNotExistsMateriaEntity(id++,nomeMaterias[index++], nomeCursos[0]);
+        insertIfNotExistsMateriaEntity(id++,nomeMaterias[index++], nomeCursos[0]);
+        insertIfNotExistsMateriaEntity(id++,nomeMaterias[index++], nomeCursos[1]);
+        insertIfNotExistsMateriaEntity(id++,nomeMaterias[index++],nomeCursos[1] );
+        insertIfNotExistsMateriaEntity(id++,nomeMaterias[index++],nomeCursos[1] );
+        insertIfNotExistsMateriaEntity(id++,nomeMaterias[index++], nomeCursos[2]);
+        insertIfNotExistsMateriaEntity(id++,nomeMaterias[index++], nomeCursos[2]);
+        insertIfNotExistsMateriaEntity(id++,nomeMaterias[index++], nomeCursos[2]);
+        insertIfNotExistsMateriaEntity(id++,nomeMaterias[index++], nomeCursos[3]);
+        insertIfNotExistsMateriaEntity(id++,nomeMaterias[index++], nomeCursos[3]);
+        insertIfNotExistsMateriaEntity(id++,nomeMaterias[index++], nomeCursos[3]);
+        insertIfNotExistsMateriaEntity(id++,nomeMaterias[index++], nomeCursos[4]);
+        insertIfNotExistsMateriaEntity(id++,nomeMaterias[index++], nomeCursos[4]);
+        insertIfNotExistsMateriaEntity(id++,nomeMaterias[index++], nomeCursos[4]);
+        insertIfNotExistsMateriaEntity(id++,nomeMaterias[index++], nomeCursos[5]);
+        insertIfNotExistsMateriaEntity(id++,nomeMaterias[index++], nomeCursos[5]);
+        insertIfNotExistsMateriaEntity(id++,nomeMaterias[index++], nomeCursos[5]);
+
+
+        for (int i = 0; i < emailProfessores.length; i++) {
+            insertIfNotExistsProfessorEntity(id++,emailProfessores[i].split("@")[0],emailProfessores[i]);
+        }
+
+
+        for (int i = 0; i < emailAlunos.length; i++) {
+            insertIfNotExistsProfessorEntity(id++,emailProfessores[i].split("@")[0],emailProfessores[i]);
+        }
+
+
+
     }
 }
