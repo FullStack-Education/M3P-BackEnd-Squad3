@@ -23,8 +23,9 @@ public class InitService {
     private final DocenteRepository docenteRepository;
     private final AlunoRepository alunoRepository;
     private final TurmaRepository turmaRepository;
+    private final NotaRepository notaRepository;
 
-    public InitService(UsuarioRepository usuarioRepository, PapelRepository papelRepository, BCryptPasswordEncoder bCryptEncoder, CursoRepository cursoRepository, MateriaRepository materiaRepository, DocenteRepository docenteRepository, AlunoRepository alunoRepository, TurmaRepository turmaRepository) {
+    public InitService(UsuarioRepository usuarioRepository, PapelRepository papelRepository, BCryptPasswordEncoder bCryptEncoder, CursoRepository cursoRepository, MateriaRepository materiaRepository, DocenteRepository docenteRepository, AlunoRepository alunoRepository, TurmaRepository turmaRepository, NotaRepository notaRepository) {
         this.usuarioRepository = usuarioRepository;
         this.papelRepository = papelRepository;
         this.bCryptEncoder = bCryptEncoder;
@@ -33,6 +34,7 @@ public class InitService {
         this.docenteRepository = docenteRepository;
         this.alunoRepository = alunoRepository;
         this.turmaRepository = turmaRepository;
+        this.notaRepository = notaRepository;
     }
 
     private void insertIfNotExistsUsuarioEntity(Long id, String login, String senha, String papel) throws Exception {
@@ -82,7 +84,7 @@ public class InitService {
             entity.setNome(nome);
             entity.setDataEntrada(LocalDate.now());
             var papel = papelRepository.findByNome("PROFESSOR").orElseThrow(() -> new RuntimeException("Papel não encotrado"));
-            var curso = usuarioRepository.findByLoginAndPapelId(loginUsuario,papel.getId()).orElseThrow(() -> new NotFoundException("Usuario não encontrado"));
+            var curso = usuarioRepository.findByLoginAndPapelId(loginUsuario, papel.getId()).orElseThrow(() -> new NotFoundException("Usuario não encontrado"));
             entity.setUsuario(curso);
             docenteRepository.save(entity);
         }
@@ -111,11 +113,28 @@ public class InitService {
             entity.setNome(nome);
             entity.setDataNascimento(LocalDate.now());
             var papel = papelRepository.findByNome("ALUNO").orElseThrow(() -> new RuntimeException("Papel não encotrado"));
-            var curso = usuarioRepository.findByLoginAndPapelId(loginUsuario,papel.getId()).orElseThrow(() -> new NotFoundException("Usuario não encontrado"));
+            var curso = usuarioRepository.findByLoginAndPapelId(loginUsuario, papel.getId()).orElseThrow(() -> new NotFoundException("Usuario não encontrado"));
             entity.setUsuario(curso);
             var turma = turmaRepository.findByNome(nomeTurma).orElseThrow(() -> new RuntimeException("Turma não encotrado"));
             entity.setTurma(turma);
             alunoRepository.save(entity);
+        }
+    }
+
+    private void insertIfNotExistsTwentyNotaEntityByAlunoEntity(Long id, String nomeAluno, String nomeProfessor, String nomeMateria, double nota) throws Exception {
+        var aluno = alunoRepository.findByNome(nomeAluno).orElseThrow(() -> new RuntimeException("Aluno não encotrado"));
+        if (notaRepository.countByAlunoId(aluno.getId()) < 20) {
+            log.info("InitService -> Inserindo a nota [{}] ", id);
+            var entity = new NotaEntity();
+            entity.setId(id);
+            entity.setAluno(aluno);
+            entity.setData(LocalDate.now());
+            var professor = docenteRepository.findByNome(nomeProfessor).orElseThrow(() -> new NotFoundException("Professor não encontrado"));
+            entity.setProfessor(professor);
+            var materia = materiaRepository.findByNome(nomeMateria).orElseThrow(() -> new RuntimeException("Materia não encotrado"));
+            entity.setMateria(materia);
+            entity.setValor(nota);
+            notaRepository.save(entity);
         }
     }
 
@@ -140,7 +159,7 @@ public class InitService {
                 "joaoPaulo@mail.com",
                 "duda@mail.com",
                 "hugo@mail.com"};
-        for (String emailProfessore : emailProfessores){
+        for (String emailProfessore : emailProfessores) {
             insertIfNotExistsUsuarioEntity(id++, emailProfessore, "professor", "PROFESSOR");
         }
 
@@ -154,7 +173,7 @@ public class InitService {
                 "oto@mail.com",
                 "alice@mail.com"};
         index = 0;
-        for (String emailAluno : emailAlunos){
+        for (String emailAluno : emailAlunos) {
             insertIfNotExistsUsuarioEntity(id++, emailAluno, "aluno", "ALUNO");
         }
 
@@ -165,7 +184,7 @@ public class InitService {
                 "Dados",
                 "Inteligencia Ariticial",
                 "Experiencia do Usuario"};
-        for (String nomeCurso : nomeCursos){
+        for (String nomeCurso : nomeCursos) {
             insertIfNotExistsCursoEntity(id++, nomeCurso);
         }
 
@@ -188,24 +207,24 @@ public class InitService {
                 "Teste de Usabilidade",
                 "Acessibilidade Digital"};
         index = 0;
-        insertIfNotExistsMateriaEntity(id++,nomeMaterias[index++], nomeCursos[0]);
-        insertIfNotExistsMateriaEntity(id++,nomeMaterias[index++], nomeCursos[0]);
-        insertIfNotExistsMateriaEntity(id++,nomeMaterias[index++], nomeCursos[0]);
-        insertIfNotExistsMateriaEntity(id++,nomeMaterias[index++], nomeCursos[1]);
-        insertIfNotExistsMateriaEntity(id++,nomeMaterias[index++],nomeCursos[1] );
-        insertIfNotExistsMateriaEntity(id++,nomeMaterias[index++],nomeCursos[1] );
-        insertIfNotExistsMateriaEntity(id++,nomeMaterias[index++], nomeCursos[2]);
-        insertIfNotExistsMateriaEntity(id++,nomeMaterias[index++], nomeCursos[2]);
-        insertIfNotExistsMateriaEntity(id++,nomeMaterias[index++], nomeCursos[2]);
-        insertIfNotExistsMateriaEntity(id++,nomeMaterias[index++], nomeCursos[3]);
-        insertIfNotExistsMateriaEntity(id++,nomeMaterias[index++], nomeCursos[3]);
-        insertIfNotExistsMateriaEntity(id++,nomeMaterias[index++], nomeCursos[3]);
-        insertIfNotExistsMateriaEntity(id++,nomeMaterias[index++], nomeCursos[4]);
-        insertIfNotExistsMateriaEntity(id++,nomeMaterias[index++], nomeCursos[4]);
-        insertIfNotExistsMateriaEntity(id++,nomeMaterias[index++], nomeCursos[4]);
-        insertIfNotExistsMateriaEntity(id++,nomeMaterias[index++], nomeCursos[5]);
-        insertIfNotExistsMateriaEntity(id++,nomeMaterias[index++], nomeCursos[5]);
-        insertIfNotExistsMateriaEntity(id++,nomeMaterias[index++], nomeCursos[5]);
+        insertIfNotExistsMateriaEntity(id++, nomeMaterias[index++], nomeCursos[0]);
+        insertIfNotExistsMateriaEntity(id++, nomeMaterias[index++], nomeCursos[0]);
+        insertIfNotExistsMateriaEntity(id++, nomeMaterias[index++], nomeCursos[0]);
+        insertIfNotExistsMateriaEntity(id++, nomeMaterias[index++], nomeCursos[1]);
+        insertIfNotExistsMateriaEntity(id++, nomeMaterias[index++], nomeCursos[1]);
+        insertIfNotExistsMateriaEntity(id++, nomeMaterias[index++], nomeCursos[1]);
+        insertIfNotExistsMateriaEntity(id++, nomeMaterias[index++], nomeCursos[2]);
+        insertIfNotExistsMateriaEntity(id++, nomeMaterias[index++], nomeCursos[2]);
+        insertIfNotExistsMateriaEntity(id++, nomeMaterias[index++], nomeCursos[2]);
+        insertIfNotExistsMateriaEntity(id++, nomeMaterias[index++], nomeCursos[3]);
+        insertIfNotExistsMateriaEntity(id++, nomeMaterias[index++], nomeCursos[3]);
+        insertIfNotExistsMateriaEntity(id++, nomeMaterias[index++], nomeCursos[3]);
+        insertIfNotExistsMateriaEntity(id++, nomeMaterias[index++], nomeCursos[4]);
+        insertIfNotExistsMateriaEntity(id++, nomeMaterias[index++], nomeCursos[4]);
+        insertIfNotExistsMateriaEntity(id++, nomeMaterias[index++], nomeCursos[4]);
+        insertIfNotExistsMateriaEntity(id++, nomeMaterias[index++], nomeCursos[5]);
+        insertIfNotExistsMateriaEntity(id++, nomeMaterias[index++], nomeCursos[5]);
+        insertIfNotExistsMateriaEntity(id++, nomeMaterias[index++], nomeCursos[5]);
 
 
         for (String emailProfessore : emailProfessores) {
@@ -221,7 +240,7 @@ public class InitService {
         for (int i = 0; i < nomeTurmas.length; i++) {
             var indexProfessor = i % emailProfessores.length;
             var indexCurso = i % nomeCursos.length;
-            insertIfNotExistsTurmaEntity(id++,nomeTurmas[i],
+            insertIfNotExistsTurmaEntity(id++, nomeTurmas[i],
                     emailProfessores[indexProfessor].split("@")[0]
                     , nomeCursos[indexCurso]);
         }
@@ -229,9 +248,18 @@ public class InitService {
         for (String emailAluno : emailAlunos) {
             Random random = new Random();
             int indexTurma = random.nextInt(nomeTurmas.length);
-            insertIfNotExistsAlunoEntity(id++, emailAluno.split("@")[0], emailAluno,nomeTurmas[indexTurma]);
+            insertIfNotExistsAlunoEntity(id++, emailAluno.split("@")[0], emailAluno, nomeTurmas[indexTurma]);
         }
 
+        for (String emailAluno : emailAlunos)
+            for (int i = 0; i < 10; i++) {
+                Random random = new Random();
+                int indexMateria = random.nextInt(nomeMaterias.length);
+                int indexProfessor = random.nextInt(emailProfessores.length);
+                insertIfNotExistsTwentyNotaEntityByAlunoEntity(id++, emailAluno.split("@")[0],
+                        emailProfessores[indexProfessor].split("@")[0],
+                        nomeMaterias[indexMateria], random.nextInt(10));
+            }
 
 
     }
