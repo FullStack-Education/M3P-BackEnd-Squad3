@@ -1,14 +1,17 @@
 package br.com.fullstackedu.labpcp.service;
 
 import br.com.fullstackedu.labpcp.database.entity.CursoEntity;
+import br.com.fullstackedu.labpcp.database.entity.MateriaEntity;
 import br.com.fullstackedu.labpcp.database.entity.UsuarioEntity;
 import br.com.fullstackedu.labpcp.database.repository.CursoRepository;
+import br.com.fullstackedu.labpcp.database.repository.MateriaRepository;
 import br.com.fullstackedu.labpcp.database.repository.PapelRepository;
 import br.com.fullstackedu.labpcp.database.repository.UsuarioRepository;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.webjars.NotFoundException;
 
 @Service
 @Slf4j
@@ -18,17 +21,19 @@ public class InitService {
     private final PapelRepository papelRepository;
     private final BCryptPasswordEncoder bCryptEncoder;
     private final CursoRepository cursoRepository;
+    private final MateriaRepository materiaRepository;
 
-    public InitService(UsuarioRepository usuarioRepository, PapelRepository papelRepository, BCryptPasswordEncoder bCryptEncoder, CursoRepository cursoRepository) {
+    public InitService(UsuarioRepository usuarioRepository, PapelRepository papelRepository, BCryptPasswordEncoder bCryptEncoder, CursoRepository cursoRepository, MateriaRepository materiaRepository) {
         this.usuarioRepository = usuarioRepository;
         this.papelRepository = papelRepository;
         this.bCryptEncoder = bCryptEncoder;
         this.cursoRepository = cursoRepository;
+        this.materiaRepository = materiaRepository;
     }
 
-    private void insertIfNotExistsUsuarioEntity(Long id, String login, String senha, String papel) throws Exception{
+    private void insertIfNotExistsUsuarioEntity(Long id, String login, String senha, String papel) throws Exception {
         if (usuarioRepository.findByLogin(login).isEmpty()) {
-            log.info("InitService -> Inserindo o usuário [{}] ",login);
+            log.info("InitService -> Inserindo o usuário [{}] ", login);
             UsuarioEntity newUser = new UsuarioEntity();
             newUser.setId(id);
             newUser.setLogin(login);
@@ -36,20 +41,32 @@ public class InitService {
             newUser.setNome(login);
             newUser.setPapel(papelRepository.findByNome(papel)
                     .orElseThrow(
-                            () -> new RuntimeException("Erro ao inserir usuario inicial. O Papel ["+ login + "] não foi encontrado" )
+                            () -> new RuntimeException("Erro ao inserir usuario inicial. O Papel [" + login + "] não foi encontrado")
                     )
             );
             usuarioRepository.save(newUser);
         }
     }
 
-    private void insertIfNotExistsCursoEntity(Long id, String nome) throws Exception{
+    private void insertIfNotExistsCursoEntity(Long id, String nome) throws Exception {
         if (cursoRepository.findByNome(nome).isEmpty()) {
-            log.info("InitService -> Inserindo o curso [{}] ",nome);
+            log.info("InitService -> Inserindo o curso [{}] ", nome);
             var newCurso = new CursoEntity();
             newCurso.setId(id);
             newCurso.setNome(nome);
             cursoRepository.save(newCurso);
+        }
+    }
+
+    private void insertIfNotExistsMateriaEntity(Long id, String nome, String nomeCurso) throws Exception {
+        if (materiaRepository.findByNome(nome).isEmpty()) {
+            log.info("InitService -> Inserindo a materia [{}] ", nome);
+            var entity = new MateriaEntity();
+            entity.setId(id);
+            entity.setNome(nome);
+            var curso = cursoRepository.findByNome(nomeCurso).orElseThrow(() -> new NotFoundException("Curso não encontrado"));
+            entity.setCurso(curso);
+            materiaRepository.save(entity);
         }
     }
 
@@ -58,40 +75,94 @@ public class InitService {
     public void initUsuarios() throws Exception {
         log.info("InitService -> Verificando necessidade de inserir usuários iniciais ");
         Long id = 1L;
-        insertIfNotExistsUsuarioEntity(id++, "ADM", "ADM","ADM");
-        insertIfNotExistsUsuarioEntity(id++, "admin@mail.com", "admin","ADM");
+        insertIfNotExistsUsuarioEntity(id++, "ADM", "ADM", "ADM");
+        insertIfNotExistsUsuarioEntity(id++, "admin@mail.com", "admin", "ADM");
         //TODO encapsule the users bellow to env "test"
-        insertIfNotExistsUsuarioEntity(id++, "pedagogico@mail.com", "pedagogico","PEDAGOGICO" );
-        insertIfNotExistsUsuarioEntity(id++, "recruiter@mail.com", "recruiter","RECRUITER" );
-        insertIfNotExistsUsuarioEntity(id++, "professor@mail.com", "professor","PROFESSOR" );
-        insertIfNotExistsUsuarioEntity(id++, "aluno@mail.com", "aluno","ALUNO" );
+        insertIfNotExistsUsuarioEntity(id++, "pedagogico@mail.com", "pedagogico", "PEDAGOGICO");
+        insertIfNotExistsUsuarioEntity(id++, "recruiter@mail.com", "recruiter", "RECRUITER");
+        insertIfNotExistsUsuarioEntity(id++, "professor@mail.com", "professor", "PROFESSOR");
+        insertIfNotExistsUsuarioEntity(id++, "aluno@mail.com", "aluno", "ALUNO");
 
         //professores
         log.info("InitService -> Cria profesores");
-
-        Long[] idProfessores = new Long[]{id++,id++,id++,id++,id++,id++};
-        insertIfNotExistsUsuarioEntity(idProfessores[0], "eduardo@mail.com", "professor","PROFESSOR" );
-        insertIfNotExistsUsuarioEntity(idProfessores[1], "gabriel@mail.com", "professor","PROFESSOR" );
-        insertIfNotExistsUsuarioEntity(idProfessores[2], "ray@mail.com", "professor","PROFESSOR" );
-        insertIfNotExistsUsuarioEntity(idProfessores[3], "joaoPaulo@mail.com", "professor","PROFESSOR" );
-        insertIfNotExistsUsuarioEntity(idProfessores[4], "duda@mail.com", "professor","PROFESSOR" );
+        int index = 0;
+        String[] nomesProfessores = new String[]{"eduardo@mail.com",
+                "gabriel@mail.com",
+                "ray@mail.com",
+                "joaoPaulo@mail.com",
+                "duda@mail.com"};
+        insertIfNotExistsUsuarioEntity(id++, nomesProfessores[index++], "professor", "PROFESSOR");
+        insertIfNotExistsUsuarioEntity(id++, nomesProfessores[index++], "professor", "PROFESSOR");
+        insertIfNotExistsUsuarioEntity(id++, nomesProfessores[index++], "professor", "PROFESSOR");
+        insertIfNotExistsUsuarioEntity(id++, nomesProfessores[index++], "professor", "PROFESSOR");
+        insertIfNotExistsUsuarioEntity(id++, nomesProfessores[index++], "professor", "PROFESSOR");
 
         //alunos
         log.info("InitService -> Cria Alunos");
-        Long[] idAlunos = new Long[]{id++,id++,id++,id++,id++,id++};
-        insertIfNotExistsUsuarioEntity(idAlunos[0], "joao@mail.com", "aluno","ALUNO" );
-        insertIfNotExistsUsuarioEntity(idAlunos[1], "maria@mail.com", "aluno","ALUNO" );
-        insertIfNotExistsUsuarioEntity(idAlunos[2], "jose@mail.com", "aluno","ALUNO" );
-        insertIfNotExistsUsuarioEntity(idAlunos[3], "fabio@mail.com", "aluno","ALUNO" );
-        insertIfNotExistsUsuarioEntity(idAlunos[4], "oto@mail.com", "aluno","ALUNO" );
-        insertIfNotExistsUsuarioEntity(idAlunos[5], "alice@mail.com", "aluno","ALUNO" );
+        String[] idAlunos = new String[]{"joao@mail.com",
+                "maria@mail.com",
+                "jose@mail.com",
+                "fabio@mail.com",
+                "oto@mail.com",
+                "alice@mail.com"};
+        index = 0;
+        insertIfNotExistsUsuarioEntity(id++, idAlunos[index++], "aluno", "ALUNO");
+        insertIfNotExistsUsuarioEntity(id++, idAlunos[index++], "aluno", "ALUNO");
+        insertIfNotExistsUsuarioEntity(id++, idAlunos[index++], "aluno", "ALUNO");
+        insertIfNotExistsUsuarioEntity(id++, idAlunos[index++], "aluno", "ALUNO");
+        insertIfNotExistsUsuarioEntity(id++, idAlunos[index++], "aluno", "ALUNO");
+        insertIfNotExistsUsuarioEntity(id++, idAlunos[index++], "aluno", "ALUNO");
 
-        Long[] idCurso = new Long[]{id++,id++,id++,id++,id++,id++};
-        insertIfNotExistsCursoEntity(idCurso[0],"FrontEnd");
-        insertIfNotExistsCursoEntity(idCurso[1],"BackEnd");
-        insertIfNotExistsCursoEntity(idCurso[2],"FullStack");
-        insertIfNotExistsCursoEntity(idCurso[3],"Dados");
-        insertIfNotExistsCursoEntity(idCurso[4],"Inteligencia Ariticial");
-        insertIfNotExistsCursoEntity(idCurso[5],"Experiencia do Usuario");
+        String[] idCurso = new String[]{"FrontEnd",
+                "BackEnd",
+                "FullStack",
+                "Dados",
+                "Inteligencia Ariticial",
+                "Experiencia do Usuario"};
+        index = 0;
+        insertIfNotExistsCursoEntity(id++, idCurso[index++]);
+        insertIfNotExistsCursoEntity(id++, idCurso[index++]);
+        insertIfNotExistsCursoEntity(id++, idCurso[index++]);
+        insertIfNotExistsCursoEntity(id++, idCurso[index++]);
+        insertIfNotExistsCursoEntity(id++, idCurso[index++]);
+        insertIfNotExistsCursoEntity(id++, idCurso[index++]);
+
+        String[] idMateria = new String[]{"Introdução ao Design Responsivo",
+                "JavaScript Avançado",
+                "Desenvolvimento com React/Vue/Angular",
+                "Criação de APIs RESTful",
+                "Desenvolvimento com Java",
+                "Testes e Debugging de Back-End",
+                "Integração de Front-End e Back-End",
+                "Escalabilidade e Otimização",
+                "Testes em Ambiente Full-Stack",
+                "Manipulação e Limpeza de Dados",
+                "Análise de Dados Exploratória",
+                "Estatística para Ciência de Dados",
+                "Redes Neurais e Deep Learning",
+                "Processamento de Linguagem Natural (NLP)",
+                "Aprendizado por Reforço",
+                "Pesquisa de Usuário",
+                "Teste de Usabilidade",
+                "Acessibilidade Digital"};
+        index = 0;
+        insertIfNotExistsMateriaEntity(id++,idMateria[index++], idCurso[0]);
+        insertIfNotExistsMateriaEntity(id++,idMateria[index++], idCurso[0]);
+        insertIfNotExistsMateriaEntity(id++,idMateria[index++], idCurso[0]);
+        insertIfNotExistsMateriaEntity(id++,idMateria[index++], idCurso[1]);
+        insertIfNotExistsMateriaEntity(id++,idMateria[index++],idCurso[1] );
+        insertIfNotExistsMateriaEntity(id++,idMateria[index++],idCurso[1] );
+        insertIfNotExistsMateriaEntity(id++,idMateria[index++], idCurso[2]);
+        insertIfNotExistsMateriaEntity(id++,idMateria[index++], idCurso[2]);
+        insertIfNotExistsMateriaEntity(id++,idMateria[index++], idCurso[2]);
+        insertIfNotExistsMateriaEntity(id++,idMateria[index++], idCurso[3]);
+        insertIfNotExistsMateriaEntity(id++,idMateria[index++], idCurso[3]);
+        insertIfNotExistsMateriaEntity(id++,idMateria[index++], idCurso[3]);
+        insertIfNotExistsMateriaEntity(id++,idMateria[index++], idCurso[4]);
+        insertIfNotExistsMateriaEntity(id++,idMateria[index++], idCurso[4]);
+        insertIfNotExistsMateriaEntity(id++,idMateria[index++], idCurso[4]);
+        insertIfNotExistsMateriaEntity(id++,idMateria[index++], idCurso[5]);
+        insertIfNotExistsMateriaEntity(id++,idMateria[index++], idCurso[5]);
+        insertIfNotExistsMateriaEntity(id++,idMateria[index++], idCurso[5]);
     }
 }
