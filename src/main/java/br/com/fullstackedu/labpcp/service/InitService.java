@@ -1,6 +1,8 @@
 package br.com.fullstackedu.labpcp.service;
 
+import br.com.fullstackedu.labpcp.database.entity.CursoEntity;
 import br.com.fullstackedu.labpcp.database.entity.UsuarioEntity;
+import br.com.fullstackedu.labpcp.database.repository.CursoRepository;
 import br.com.fullstackedu.labpcp.database.repository.PapelRepository;
 import br.com.fullstackedu.labpcp.database.repository.UsuarioRepository;
 import jakarta.annotation.PostConstruct;
@@ -15,11 +17,13 @@ public class InitService {
     private final UsuarioRepository usuarioRepository;
     private final PapelRepository papelRepository;
     private final BCryptPasswordEncoder bCryptEncoder;
+    private final CursoRepository cursoRepository;
 
-    public InitService(UsuarioRepository usuarioRepository, PapelRepository papelRepository, BCryptPasswordEncoder bCryptEncoder) {
+    public InitService(UsuarioRepository usuarioRepository, PapelRepository papelRepository, BCryptPasswordEncoder bCryptEncoder, CursoRepository cursoRepository) {
         this.usuarioRepository = usuarioRepository;
         this.papelRepository = papelRepository;
         this.bCryptEncoder = bCryptEncoder;
+        this.cursoRepository = cursoRepository;
     }
 
     private void insertIfNotExistsUsuarioEntity(Long id, String login, String senha, String papel) throws Exception{
@@ -38,6 +42,17 @@ public class InitService {
             usuarioRepository.save(newUser);
         }
     }
+
+    private void insertIfNotExistsCursoEntity(Long id, String nome) throws Exception{
+        if (cursoRepository.findByNome(nome).isEmpty()) {
+            log.info("InitService -> Inserindo o curso [{}] ",nome);
+            var newCurso = new CursoEntity();
+            newCurso.setId(id);
+            newCurso.setNome(nome);
+            cursoRepository.save(newCurso);
+        }
+    }
+
 
     @PostConstruct
     public void initUsuarios() throws Exception {
@@ -70,5 +85,13 @@ public class InitService {
         insertIfNotExistsUsuarioEntity(idAlunos[3], "fabio@mail.com", "aluno","ALUNO" );
         insertIfNotExistsUsuarioEntity(idAlunos[4], "oto@mail.com", "aluno","ALUNO" );
         insertIfNotExistsUsuarioEntity(idAlunos[5], "alice@mail.com", "aluno","ALUNO" );
+
+        Long[] idCurso = new Long[]{id++,id++,id++,id++,id++,id++};
+        insertIfNotExistsCursoEntity(idCurso[0],"FrontEnd");
+        insertIfNotExistsCursoEntity(idCurso[1],"BackEnd");
+        insertIfNotExistsCursoEntity(idCurso[2],"FullStack");
+        insertIfNotExistsCursoEntity(idCurso[3],"Dados");
+        insertIfNotExistsCursoEntity(idCurso[4],"Inteligencia Ariticial");
+        insertIfNotExistsCursoEntity(idCurso[5],"Experiencia do Usuario");
     }
 }
