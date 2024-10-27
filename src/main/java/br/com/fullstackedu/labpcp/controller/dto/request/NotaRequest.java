@@ -16,11 +16,16 @@ public record NotaRequest (
         @NotNull(message = "Atributo id_materia é obrigatório")
         Long id_materia,
 
+        @NotNull(message = "Atributo id_turma é obrigatório")
+        Long id_turma,
+
+        @NotNull(message = "Atributo id_materia é obrigatório")
+        String nome,
+
         @NotNull(message = "Atributo id_materia é obrigatório")
         Double valor,
 
         @NotNull(message = "Atributo data é obrigatório no formato dd/MM/yyyy")
-        @JsonFormat(pattern = "dd/MM/yyyy")
         LocalDate data
 ){
 }
