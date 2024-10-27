@@ -29,6 +29,14 @@ public class NotaEntity {
     @NotNull(message = "É necessário uma Materia válida para cadastrar uma Nota")
     private MateriaEntity materia;
 
+    @ManyToOne
+    @JoinColumn(name = "id_turma")
+    @NotNull(message = "É necessário uma turma válida para cadastrar uma Nota")
+    private TurmaEntity turma;
+
+    @Column(name = "nome",nullable = true)
+    private String nome;
+
     @Column(name = "valor")
     private Double valor;
 

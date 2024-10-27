@@ -5,14 +5,8 @@ import br.com.fullstackedu.labpcp.controller.dto.request.NotaUpdateRequest;
 import br.com.fullstackedu.labpcp.controller.dto.response.AlunoScoreDTO;
 import br.com.fullstackedu.labpcp.controller.dto.response.AlunoScoreResponse;
 import br.com.fullstackedu.labpcp.controller.dto.response.NotaResponse;
-import br.com.fullstackedu.labpcp.database.entity.AlunoEntity;
-import br.com.fullstackedu.labpcp.database.entity.DocenteEntity;
-import br.com.fullstackedu.labpcp.database.entity.MateriaEntity;
-import br.com.fullstackedu.labpcp.database.entity.NotaEntity;
-import br.com.fullstackedu.labpcp.database.repository.AlunoRepository;
-import br.com.fullstackedu.labpcp.database.repository.DocenteRepository;
-import br.com.fullstackedu.labpcp.database.repository.MateriaRepository;
-import br.com.fullstackedu.labpcp.database.repository.NotaRepository;
+import br.com.fullstackedu.labpcp.database.entity.*;
+import br.com.fullstackedu.labpcp.database.repository.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -33,6 +27,7 @@ public class NotaService {
     private final AlunoRepository alunoRepository;
     private final MateriaRepository materiaRepository;
     private final LoginService loginService;
+    private final TurmaRepository turmaRepository;
 
     private static final List<String> commonPermissions = List.of("ADM", "PROFESSOR");
     private static final List<String> ownerPermissions = List.of("ALUNO");
@@ -86,12 +81,21 @@ public class NotaService {
             return new NotaResponse(false, LocalDateTime.now() , errMessage , null, HttpStatus.NOT_FOUND);
         }
 
+        TurmaEntity targetTurma = turmaRepository.findById(notaRequest.id_turma()).orElse(null);
+        if (Objects.isNull(targetTurma)){
+            String errMessage = "Erro ao cadastrar nota: Nenhuma turma com id ["+ notaRequest.id_turma() +"] encontrada";
+            log.error(errMessage);
+            return new NotaResponse(false, LocalDateTime.now() , errMessage , null, HttpStatus.NOT_FOUND);
+        }
+
         NotaEntity newNota = new NotaEntity();
 
 
         newNota.setAluno(targetAluno);
         newNota.setProfessor(targetProfessor);
         newNota.setMateria(targetMateria);
+        newNota.setTurma(targetTurma);
+        newNota.setNome(notaRequest.nome());
         newNota.setData(notaRequest.data());
         newNota.setValor(notaRequest.valor());
         NotaEntity insertedNota = notaRepository.save(newNota);
@@ -256,6 +260,16 @@ public class NotaService {
                         "Docente id [" + notaUpdateRequest.id_professor() + "] não encontrado"
                 );
             targetNotaEntity.setProfessor(targetDocente);
+        }
+
+        if (Objects.nonNull(notaUpdateRequest.id_turma())) {
+            TurmaEntity targetTurma = turmaRepository.findById(notaUpdateRequest.id_professor()).orElse(null);
+            if (Objects.isNull(targetTurma))
+                return NotaResponse.createErrorResponse(
+                        HttpStatus.NOT_FOUND,
+                        "Turma id [" + notaUpdateRequest.id_turma() + "] não encontrado"
+                );
+            targetNotaEntity.setTurma(targetTurma);
         }
         if (Objects.nonNull(notaUpdateRequest.valor())) targetNotaEntity.setValor(notaUpdateRequest.valor());
         if (Objects.nonNull(notaUpdateRequest.data())) targetNotaEntity.setData(notaUpdateRequest.data());

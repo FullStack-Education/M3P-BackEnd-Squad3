@@ -12,5 +12,5 @@ public interface NotaRepository extends JpaRepository<NotaEntity, Long> {
     Optional<NotaEntity> findByIdAndAlunoId(Long notaId, Long AlunoId);
     
     int countByAlunoId(Long idAluno);
-    
+
 }
