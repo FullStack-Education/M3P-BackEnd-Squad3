@@ -4,8 +4,10 @@ import br.com.fullstackedu.labpcp.controller.dto.request.DocenteCreateRequest;
 import br.com.fullstackedu.labpcp.controller.dto.request.DocenteUpdateRequest;
 import br.com.fullstackedu.labpcp.controller.dto.response.NovoDocenteResponse;
 import br.com.fullstackedu.labpcp.database.entity.DocenteEntity;
+import br.com.fullstackedu.labpcp.database.entity.MateriaEntity;
 import br.com.fullstackedu.labpcp.database.entity.UsuarioEntity;
 import br.com.fullstackedu.labpcp.database.repository.DocenteRepository;
+import br.com.fullstackedu.labpcp.database.repository.MateriaRepository;
 import br.com.fullstackedu.labpcp.database.repository.UsuarioRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -20,11 +22,76 @@ public class DocenteService {
     private final DocenteRepository docenteRepository;
     private final UsuarioRepository usuarioRepository;
     private final LoginService loginService;
+    private final MateriaRepository materiaRepository;
 
-    public DocenteService(DocenteRepository docenteRepository, UsuarioRepository usuarioRepository, LoginService loginService) {
+    public DocenteService(DocenteRepository docenteRepository, UsuarioRepository usuarioRepository, LoginService loginService, MateriaRepository materiaRepository) {
         this.docenteRepository = docenteRepository;
         this.usuarioRepository = usuarioRepository;
         this.loginService = loginService;
+        this.materiaRepository = materiaRepository;
+    }
+
+    public NovoDocenteResponse addMateriaDocente(Long materiaId, Long docenteId, String authToken) {
+        String papelName =  loginService.getFieldInToken(authToken, "scope");
+        List<String> authorizedPapeis =  Arrays.asList("ADM", "PEDAGOGICO", "RECRUITER");
+        if (!authorizedPapeis.contains(papelName)){
+            String errMessage = "Usuários com papel [" + papelName + "] não tem acesso a essa funcionalidade";
+            log.error(errMessage);
+            return new NovoDocenteResponse(false, LocalDateTime.now() , errMessage , null, HttpStatus.UNAUTHORIZED);
+        }
+
+        Optional<DocenteEntity> docenteOpt = docenteRepository.findById(docenteId);
+        Optional<MateriaEntity> materiaOpt = materiaRepository.findById(materiaId);
+
+        if (docenteOpt.isEmpty()) {
+            String errMessage = "Erro ao cadastrar docente: Nenhum docente com id [" + docenteId + "] encontrado";
+            return new NovoDocenteResponse(false, LocalDateTime.now(), errMessage, null, HttpStatus.NOT_FOUND);
+        } else if (materiaOpt.isEmpty()) {
+            String errMessage = "Erro ao cadastrar docente: Nenhum docente com id [" + materiaId + "] encontrado";
+            return new NovoDocenteResponse(false, LocalDateTime.now(), errMessage, null, HttpStatus.NOT_FOUND);
+        } else {
+            //log.info("4");
+            DocenteEntity docente = docenteOpt.get();
+            //log.info("5");
+            MateriaEntity materia = materiaOpt.get();
+            //log.info("6, {}",materia);
+            docente.addMateria(materia);
+            //log.info(docente.toString());
+            //log.info("7");
+            DocenteEntity newDocenteEntity = docenteRepository.save(docente);
+            //log.info("8");
+            //log.info("Docente atualizado com sucesso: {}", newDocenteEntity);
+            //log.info("9");
+            return new NovoDocenteResponse(true, LocalDateTime.now(), "Docente atualizado com sucesso.", Collections.singletonList(newDocenteEntity), HttpStatus.OK);
+        }
+    }
+
+    public NovoDocenteResponse deleteMateriaDocente(Long materiaId, Long docenteId, String authToken) {
+        String papelName =  loginService.getFieldInToken(authToken, "scope");
+        List<String> authorizedPapeis =  Arrays.asList("ADM", "PEDAGOGICO", "RECRUITER");
+        if (!authorizedPapeis.contains(papelName)){
+            String errMessage = "Usuários com papel [" + papelName + "] não tem acesso a essa funcionalidade";
+            log.error(errMessage);
+            return new NovoDocenteResponse(false, LocalDateTime.now() , errMessage , null, HttpStatus.UNAUTHORIZED);
+        }
+        Optional<DocenteEntity> docenteOpt = docenteRepository.findById(docenteId);
+        Optional<MateriaEntity> materiaOpt = materiaRepository.findById(materiaId);
+
+        if (docenteOpt.isEmpty()) {
+            String errMessage = "Erro ao atualizar docente: Nenhum docente com id [" + docenteId + "] encontrado";
+            log.error(errMessage);
+            return new NovoDocenteResponse(false, LocalDateTime.now(), errMessage, null, HttpStatus.NOT_FOUND);
+        } else if (materiaOpt.isEmpty()) {
+            String errMessage = "Erro ao atualizar docente: Nenhuma materia com id [" + materiaId + "] encontrada";
+            log.error(errMessage);
+            return new NovoDocenteResponse(false, LocalDateTime.now(), errMessage, null, HttpStatus.NOT_FOUND);
+        } else {
+            DocenteEntity docente = docenteOpt.get();
+            MateriaEntity materia = materiaOpt.get();
+            docente.removeMateria(materia);
+            DocenteEntity docenteEntity = docenteRepository.save(docente);
+            return new NovoDocenteResponse(false, LocalDateTime.now(), "Docente atualizado com sucesso", Collections.singletonList(docenteEntity), HttpStatus.NO_CONTENT);
+        }
     }
 
     public NovoDocenteResponse novoDocente(DocenteCreateRequest docenteCreateRequest, String authToken) throws Exception{
