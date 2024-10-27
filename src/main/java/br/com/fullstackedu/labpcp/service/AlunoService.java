@@ -69,6 +69,7 @@ public class AlunoService {
             newAluno.setUsuario(targetUsuario);
             newAluno.setNome(alunoRequest.nome());
             newAluno.setDataNascimento(alunoRequest.data_nascimento());
+            newAluno.setTurma(targetTurma);
             newAluno.setTelefone(alunoRequest.telefone());
             newAluno.setGenero(alunoRequest.genero());
             newAluno.setEstadoCivil(alunoRequest.estadoCivil());
