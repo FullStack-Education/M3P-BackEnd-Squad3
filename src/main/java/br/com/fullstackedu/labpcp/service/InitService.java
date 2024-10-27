@@ -105,6 +105,9 @@ public class InitService {
             var entity = new TurmaEntity();
             entity.setId(id);
             entity.setNome(nome);
+            entity.setDataFim(LocalDate.now());
+            entity.setDataInicio(LocalDate.now());
+            entity.setHora("10:10");
             var curso = cursoRepository.findByNome(nomeCurso).orElseThrow(() -> new NotFoundException("Curso não encontrado"));
             var docente = docenteRepository.findByNome(nomeProfessor).orElseThrow(() -> new NotFoundException("Professor não encontrado"));
             entity.setProfessor(docente);
@@ -130,7 +133,7 @@ public class InitService {
         }
     }
 
-    private void insertIfNotExistsTwentyNotaEntityByAlunoEntity(Long id, String nomeAluno, String nomeProfessor, String nomeMateria, double nota) throws Exception {
+    private void insertIfNotExistsTwentyNotaEntityByAlunoEntity(Long id, String nomeAluno, String nomeProfessor, String nomeMateria,String nomeTurma, double nota) throws Exception {
         var aluno = alunoRepository.findByNome(nomeAluno).orElseThrow(() -> new RuntimeException("Aluno não encotrado"));
         if (notaRepository.countByAlunoId(aluno.getId()) < 20) {
             log.info("InitService -> Inserindo a nota [{}] ", id);
@@ -142,6 +145,8 @@ public class InitService {
             entity.setProfessor(professor);
             var materia = materiaRepository.findByNome(nomeMateria).orElseThrow(() -> new RuntimeException("Materia não encotrado"));
             entity.setMateria(materia);
+            var turma = turmaRepository.findByNome(nomeTurma).orElseThrow(() -> new RuntimeException("Materia não encotrado"));
+            entity.setTurma(turma);
             entity.setValor(nota);
             notaRepository.save(entity);
         }
@@ -275,9 +280,12 @@ public class InitService {
                 Random random = new Random();
                 int indexMateria = random.nextInt(nomeMaterias.length);
                 int indexProfessor = random.nextInt(emailProfessores.length);
+                int indexTurma = random.nextInt(nomeTurmas.length);
                 insertIfNotExistsTwentyNotaEntityByAlunoEntity(id++, emailAluno.split("@")[0],
                         emailProfessores[indexProfessor].split("@")[0],
-                        nomeMaterias[indexMateria], random.nextInt(10));
+                        nomeMaterias[indexMateria],
+                        nomeTurmas[indexTurma],
+                        random.nextInt(10));
             }
 
 
