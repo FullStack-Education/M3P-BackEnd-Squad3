@@ -7,4 +7,5 @@ import java.util.Optional;
 
 public interface AlunoRepository extends JpaRepository<AlunoEntity, Long> {
     Optional<AlunoEntity> findByUsuarioId(Long id_usuario);
+    Optional<AlunoEntity> findByNome(String nome);
 }
