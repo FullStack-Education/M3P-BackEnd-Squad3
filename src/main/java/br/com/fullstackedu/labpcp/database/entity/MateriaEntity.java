@@ -26,7 +26,4 @@ public class MateriaEntity {
     @JsonBackReference
     private CursoEntity curso;
 
-    @ManyToMany(mappedBy = "materias")
-    private Set<DocenteEntity> docentes ;
-
 }
