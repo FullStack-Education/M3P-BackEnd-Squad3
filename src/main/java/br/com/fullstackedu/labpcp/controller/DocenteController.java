@@ -198,7 +198,7 @@ public class DocenteController {
             @PathVariable Long materiaId) {
         log.info("DELETE /{}/materias/{}", docenteId, materiaId);
         String actualToken = authToken.substring(7);
-        NovoDocenteResponse response = docenteService.deleteMateriaDocente(materiaId, docenteId, authToken);
+        NovoDocenteResponse response = docenteService.deleteMateriaDocente(materiaId, docenteId, actualToken);
         if (response.success()) {
             log.info("DELETE /docentes -> OK ");
         } else {

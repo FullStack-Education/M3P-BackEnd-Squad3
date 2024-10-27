@@ -50,18 +50,15 @@ public class DocenteService {
             String errMessage = "Erro ao cadastrar docente: Nenhum docente com id [" + materiaId + "] encontrado";
             return new NovoDocenteResponse(false, LocalDateTime.now(), errMessage, null, HttpStatus.NOT_FOUND);
         } else {
-            //log.info("4");
             DocenteEntity docente = docenteOpt.get();
-            //log.info("5");
             MateriaEntity materia = materiaOpt.get();
-            //log.info("6, {}",materia);
-            docente.addMateria(materia);
-            //log.info(docente.toString());
-            //log.info("7");
+            if(docente.getMaterias().contains(materia)){
+                String errMessage = "Docente ja ministra essa materia";
+                log.error(errMessage);
+                return new NovoDocenteResponse(false, LocalDateTime.now() , errMessage , null, HttpStatus.UNPROCESSABLE_ENTITY);
+            }
+            docente.getMaterias().add(materia);
             DocenteEntity newDocenteEntity = docenteRepository.save(docente);
-            //log.info("8");
-            //log.info("Docente atualizado com sucesso: {}", newDocenteEntity);
-            //log.info("9");
             return new NovoDocenteResponse(true, LocalDateTime.now(), "Docente atualizado com sucesso.", Collections.singletonList(newDocenteEntity), HttpStatus.OK);
         }
     }
@@ -81,17 +78,18 @@ public class DocenteService {
             String errMessage = "Erro ao atualizar docente: Nenhum docente com id [" + docenteId + "] encontrado";
             log.error(errMessage);
             return new NovoDocenteResponse(false, LocalDateTime.now(), errMessage, null, HttpStatus.NOT_FOUND);
-        } else if (materiaOpt.isEmpty()) {
+        }
+        if (materiaOpt.isEmpty()) {
             String errMessage = "Erro ao atualizar docente: Nenhuma materia com id [" + materiaId + "] encontrada";
             log.error(errMessage);
             return new NovoDocenteResponse(false, LocalDateTime.now(), errMessage, null, HttpStatus.NOT_FOUND);
-        } else {
-            DocenteEntity docente = docenteOpt.get();
-            MateriaEntity materia = materiaOpt.get();
-            docente.removeMateria(materia);
-            DocenteEntity docenteEntity = docenteRepository.save(docente);
-            return new NovoDocenteResponse(false, LocalDateTime.now(), "Docente atualizado com sucesso", Collections.singletonList(docenteEntity), HttpStatus.NO_CONTENT);
         }
+        DocenteEntity docente = docenteOpt.get();
+        MateriaEntity materia = materiaOpt.get();
+        docente.getMaterias().remove(materia);
+        DocenteEntity docenteEntity = docenteRepository.save(docente);
+        return new NovoDocenteResponse(false, LocalDateTime.now(), "Docente atualizado com sucesso", Collections.singletonList(docenteEntity), HttpStatus.NO_CONTENT);
+
     }
 
     public NovoDocenteResponse novoDocente(DocenteCreateRequest docenteCreateRequest, String authToken) throws Exception{
