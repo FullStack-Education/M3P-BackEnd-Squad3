@@ -48,4 +48,13 @@ public class DocenteEntity {
         )
         @JsonBackReference
         private Set<MateriaEntity> materias;
+
+
+        public void addMateria(MateriaEntity materia) {
+                this.materias.add(materia);
+        }
+
+        public void removeMateria(MateriaEntity materia) {
+                this.materias.remove(materia);
+        }
 }

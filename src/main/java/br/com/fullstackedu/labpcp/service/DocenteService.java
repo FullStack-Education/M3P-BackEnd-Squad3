@@ -57,7 +57,7 @@ public class DocenteService {
                 log.error(errMessage);
                 return new NovoDocenteResponse(false, LocalDateTime.now() , errMessage , null, HttpStatus.UNPROCESSABLE_ENTITY);
             }
-            docente.getMaterias().add(materia);
+            docente.addMateria(materia);
             DocenteEntity newDocenteEntity = docenteRepository.save(docente);
             return new NovoDocenteResponse(true, LocalDateTime.now(), "Docente atualizado com sucesso.", Collections.singletonList(newDocenteEntity), HttpStatus.OK);
         }
@@ -86,7 +86,7 @@ public class DocenteService {
         }
         DocenteEntity docente = docenteOpt.get();
         MateriaEntity materia = materiaOpt.get();
-        docente.getMaterias().remove(materia);
+        docente.removeMateria(materia);
         DocenteEntity docenteEntity = docenteRepository.save(docente);
         return new NovoDocenteResponse(false, LocalDateTime.now(), "Docente atualizado com sucesso", Collections.singletonList(docenteEntity), HttpStatus.NO_CONTENT);
 
