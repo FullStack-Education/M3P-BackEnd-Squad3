@@ -37,6 +37,15 @@ public class InitService {
         this.notaRepository = notaRepository;
     }
 
+
+    private void insertIfNotExistsPapelEntity(Long id, String nome) {
+        if (papelRepository.findByNome(nome).isEmpty()) {
+            PapelEntity newPapel = new PapelEntity();
+            newPapel.setId(id);
+            newPapel.setNome(nome);
+            papelRepository.save(newPapel);
+        }
+    }
     private void insertIfNotExistsUsuarioEntity(Long id, String login, String senha, String papel) throws Exception {
         if (usuarioRepository.findByLogin(login).isEmpty()) {
             log.info("InitService -> Inserindo o docente [{}] ", login);
@@ -140,6 +149,16 @@ public class InitService {
 
     @PostConstruct
     public void initUsuarios() throws Exception {
+
+        log.info("InitService -> Verificando necessidade de inserir papeis iniciais ");
+
+        insertIfNotExistsPapelEntity(1L, "ADM");
+        insertIfNotExistsPapelEntity(2L, "PEDAGOGICO");
+        insertIfNotExistsPapelEntity(3L, "RECRUITER");
+        insertIfNotExistsPapelEntity(4L, "PROFESSOR");
+        insertIfNotExistsPapelEntity(5L, "ALUNO");
+
+
         log.info("InitService -> Verificando necessidade de inserir usuários iniciais ");
         Long id = 1L;
         insertIfNotExistsUsuarioEntity(id++, "ADM", "ADM", "ADM");
