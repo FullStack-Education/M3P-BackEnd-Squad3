@@ -1,11 +1,13 @@
 package br.com.fullstackedu.labpcp.database.entity;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.*;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
 
 @Data
 @Entity
@@ -21,6 +23,7 @@ public class DocenteEntity {
         @Column(name = "data_entrada")
         private LocalDate dataEntrada;
 
+
         @ManyToOne
         @JoinColumn(name = "id_usuario")
         @NotNull(message = "É necessário um Usuário Valido para cadastrar um Docente")
@@ -35,5 +38,23 @@ public class DocenteEntity {
 
         public DocenteEntity() {
 
+        }
+
+        @ManyToMany
+        @JoinTable(
+                name = "docente_materias",
+                joinColumns = @JoinColumn(name = "docente_id"),
+                inverseJoinColumns = @JoinColumn(name = "materia_id")
+        )
+        @JsonBackReference
+        private Set<MateriaEntity> materias;
+
+
+        public void addMateria(MateriaEntity materia) {
+                this.materias.add(materia);
+        }
+
+        public void removeMateria(MateriaEntity materia) {
+                this.materias.remove(materia);
         }
 }

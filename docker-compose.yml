@@ -1,6 +1,6 @@
 services:
   labpcp-db:
-    image: postgres:15-alpine
+    image: postgres:16-alpine
     container_name: labpcp-db
     environment:
       POSTGRES_DB: labpcp
