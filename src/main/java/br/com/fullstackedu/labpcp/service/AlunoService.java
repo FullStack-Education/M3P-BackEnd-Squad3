@@ -3,6 +3,7 @@ package br.com.fullstackedu.labpcp.service;
 import br.com.fullstackedu.labpcp.controller.dto.request.AlunoRequest;
 import br.com.fullstackedu.labpcp.controller.dto.request.AlunoUpdateRequest;
 import br.com.fullstackedu.labpcp.controller.dto.response.AlunoResponse;
+import br.com.fullstackedu.labpcp.controller.dto.response.CursoResponse;
 import br.com.fullstackedu.labpcp.database.entity.AlunoEntity;
 import br.com.fullstackedu.labpcp.database.entity.TurmaEntity;
 import br.com.fullstackedu.labpcp.database.entity.UsuarioEntity;
@@ -213,7 +214,33 @@ public class AlunoService {
         }
     }
 
+
+
     public long count() {
         return alunoRepository.count();
+    }
+
+    public CursoResponse getCourseByAlunoId(Long alunoId, String actualToken)
+    {
+        try {
+        if (!_isAuthorized(actualToken)) {
+            String errMessage = "O Usuário logado não tem acesso a essa funcionalidade";
+            log.error(errMessage);
+            return new CursoResponse(false, LocalDateTime.now(), errMessage, null, HttpStatus.UNAUTHORIZED);
+        }
+
+            AlunoEntity targetAluno = alunoRepository.findById(alunoId).orElse(null);
+            if (Objects.isNull(targetAluno)) {
+                return new CursoResponse(false, LocalDateTime.now(), "Aluno ID " + alunoId + " não encontrado.", null, HttpStatus.NOT_FOUND);
+            }
+
+            var targetturma = targetAluno.getTurma().getCurso();
+
+            return new CursoResponse(true, LocalDateTime.now(), "Curso do aluno encontrado", Collections.singletonList(targetturma), HttpStatus.OK);
+
+        } catch (Exception e) {
+            log.error("Falha ao acessar o curso do aluno {}. Erro: {}", alunoId, e.getMessage());
+            return new CursoResponse(false, LocalDateTime.now(), e.getMessage(), null, HttpStatus.BAD_REQUEST);
+        }
     }
 }
