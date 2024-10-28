@@ -101,7 +101,7 @@ public class InitService {
 
     private void insertIfNotExistsTurmaEntity(Long id, String nome, String nomeProfessor, String nomeCurso) throws Exception {
         if (turmaRepository.findByNome(nome).isEmpty()) {
-            log.info("InitService -> Inserindo a aluno [{}] ", nome);
+            log.info("InitService -> Inserindo a turma [{}] ", nome);
             var entity = new TurmaEntity();
             entity.setId(id);
             entity.setNome(nome);
@@ -124,6 +124,20 @@ public class InitService {
             entity.setId(id);
             entity.setNome(nome);
             entity.setDataNascimento(LocalDate.now());
+            entity.setTelefone("4899999999");
+            entity.setGenero("outro");
+            entity.setEstadoCivil("solteiro");
+            entity.setEmail("mail@mail.com");
+            entity.setEmail("mail@mail.com");
+            entity.setCpf("mail@mail.com");
+            entity.setCpf("00000000000");
+            entity.setRg("4444444");
+            entity.setNaturalidade("brasil");
+            entity.setCep("88000000");
+            entity.setLogadouro("rua sem fim");
+            entity.setNumero("7070");
+            entity.setCidade("pinhacinho");
+            entity.setComplemento("casa");
             var papel = papelRepository.findByNome("ALUNO").orElseThrow(() -> new RuntimeException("Papel não encotrado"));
             var curso = usuarioRepository.findByLoginAndPapelId(loginUsuario, papel.getId()).orElseThrow(() -> new NotFoundException("Usuario não encontrado"));
             entity.setUsuario(curso);
