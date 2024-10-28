@@ -3,10 +3,13 @@ package br.com.fullstackedu.labpcp.service;
 import br.com.fullstackedu.labpcp.controller.dto.request.AlunoRequest;
 import br.com.fullstackedu.labpcp.controller.dto.request.AlunoUpdateRequest;
 import br.com.fullstackedu.labpcp.controller.dto.response.AlunoResponse;
+import br.com.fullstackedu.labpcp.controller.dto.response.CursoResponse;
 import br.com.fullstackedu.labpcp.database.entity.AlunoEntity;
+import br.com.fullstackedu.labpcp.database.entity.CursoEntity;
 import br.com.fullstackedu.labpcp.database.entity.TurmaEntity;
 import br.com.fullstackedu.labpcp.database.entity.UsuarioEntity;
 import br.com.fullstackedu.labpcp.database.repository.AlunoRepository;
+import br.com.fullstackedu.labpcp.database.repository.CursoRepository;
 import br.com.fullstackedu.labpcp.database.repository.TurmaRepository;
 import br.com.fullstackedu.labpcp.database.repository.UsuarioRepository;
 import lombok.RequiredArgsConstructor;
@@ -28,6 +31,7 @@ public class AlunoService {
     private final LoginService loginService;
     private final UsuarioRepository usuarioRepository;
     private final TurmaRepository turmaRepository;
+    private final CursoRepository cursoRepository;
 
     private static final List<String> commonPermissions = List.of("ADM", "PEDAGOGICO");
     private static final List<String> deletePermission = List.of("ADM");
@@ -215,5 +219,27 @@ public class AlunoService {
 
     public long count() {
         return alunoRepository.count();
+    }
+
+
+
+    public CursoResponse getExtraCoursesByAlunoId(Long alunoId, String actualToken) {
+        try {
+            if (!_isAuthorized(actualToken)) {
+                String errMessage = "O Usuário logado não tem acesso a essa funcionalidade";
+                log.error(errMessage);
+                return new CursoResponse(false, LocalDateTime.now(), errMessage, null, HttpStatus.UNAUTHORIZED);
+            }
+            AlunoEntity targetAluno = alunoRepository.findById(alunoId).orElse(null);
+            if (Objects.isNull(targetAluno)) {
+                return new CursoResponse(false, LocalDateTime.now(), "Aluno ID " + alunoId + " não encontrado.", null, HttpStatus.NOT_FOUND);
+            }
+            var targetTurma = targetAluno.getTurma().getCurso();
+            List<CursoEntity> listCursos = cursoRepository.findByIdNot(targetTurma.getId());
+            return new CursoResponse(true, LocalDateTime.now(), "Curso do aluno encontrado: " + listCursos.size(), listCursos, HttpStatus.OK);
+        } catch (Exception e) {
+            log.error("Falha ao acessar os cursos extras do aluno {}. Erro: {}", alunoId, e.getMessage());
+            return new CursoResponse(false, LocalDateTime.now(), e.getMessage(), null, HttpStatus.BAD_REQUEST);
+        }
     }
 }
