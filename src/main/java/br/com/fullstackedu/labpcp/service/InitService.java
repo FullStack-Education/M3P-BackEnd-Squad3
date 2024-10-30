@@ -181,12 +181,12 @@ public class InitService {
         log.info("InitService -> Verificando necessidade de inserir usuários iniciais ");
         Long id = 1L;
         insertIfNotExistsUsuarioEntity(id++, "ADM", "ADM", "ADM");
-        insertIfNotExistsUsuarioEntity(id++, "admin@mail.com", "admin", "ADM");
+        insertIfNotExistsUsuarioEntity(id++, "admin@mail.com", "admin@mail.com", "ADM");
         //TODO encapsule the users bellow to env "test"
-        insertIfNotExistsUsuarioEntity(id++, "pedagogico@mail.com", "pedagogico", "PEDAGOGICO");
-        insertIfNotExistsUsuarioEntity(id++, "recruiter@mail.com", "recruiter", "RECRUITER");
-        insertIfNotExistsUsuarioEntity(id++, "professor@mail.com", "professor", "PROFESSOR");
-        insertIfNotExistsUsuarioEntity(id++, "aluno@mail.com", "aluno", "ALUNO");
+        insertIfNotExistsUsuarioEntity(id++, "pedagogico@mail.com", "pedagogico@mail.com", "PEDAGOGICO");
+        insertIfNotExistsUsuarioEntity(id++, "recruiter@mail.com", "recruiter@mail.com", "RECRUITER");
+        insertIfNotExistsUsuarioEntity(id++, "professor@mail.com", "professor@mail.com", "PROFESSOR");
+        insertIfNotExistsUsuarioEntity(id++, "aluno@mail.com", "aluno@mail.com", "ALUNO");
 
         //professores
         log.info("InitService -> Cria profesores");

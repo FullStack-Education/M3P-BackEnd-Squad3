@@ -6,6 +6,7 @@ import br.com.fullstackedu.labpcp.controller.dto.request.AlunoUpdateRequest;
 import br.com.fullstackedu.labpcp.controller.dto.response.AlunoResponse;
 
 import br.com.fullstackedu.labpcp.controller.dto.response.AlunoScoreResponse;
+import br.com.fullstackedu.labpcp.controller.dto.response.CursoResponse;
 import br.com.fullstackedu.labpcp.controller.dto.response.NotaResponse;
 import br.com.fullstackedu.labpcp.service.AlunoService;
 import br.com.fullstackedu.labpcp.service.NotaService;
@@ -198,6 +199,23 @@ public class AlunoController {
         log.info("GET /alunos/{}/pontuacao", alunoId);
         String actualToken = authToken.substring(7);
         AlunoScoreResponse response = notaService.getScoreByAlunoId(alunoId, actualToken);
+        if (response.success()) {
+            log.info("GET /alunos/{}/pontuacao -> OK", alunoId);
+        } else {
+            log.error("GET /alunos/{}/pontuacao -> {}", alunoId, response.httpStatus());
+        }
+        return ResponseEntity.status(response.httpStatus()).body(response);
+    }
+
+    @GetMapping("/{alunoId}/meu-curso")
+    public ResponseEntity<CursoResponse> getCourseByAlunoId(
+            @Parameter(description = "ID do aluno", example = "1")
+            @PathVariable Long alunoId,
+            @RequestHeader(name = "Authorization") String authToken) {
+
+        log.info("GET /alunos/{}/meu-curso", alunoId);
+        String actualToken = authToken.substring(7);
+        CursoResponse response = alunoService.getCourseByAlunoId(alunoId, actualToken);
         if (response.success()) {
             log.info("GET /alunos/{}/pontuacao -> OK", alunoId);
         } else {
