@@ -63,6 +63,7 @@ public class LoginService {
             Instant now = Instant.now();
             String scope = usuarioEntity.getPapel().getNome();
             Long id_usuario = usuarioEntity.getId();
+            String nome = usuarioEntity.getNome();
 
             JwtClaimsSet claims = JwtClaimsSet.builder()
                     .issuer("labpcp_system")
@@ -71,6 +72,7 @@ public class LoginService {
                     .subject(usuarioEntity.getId().toString())  // token owner
                     .claim("scope", scope)
                     .claim("id_usuario", id_usuario)
+                    .claim("name", nome)
                     .build();
             log.info("claims: [{}]", claims);
 
