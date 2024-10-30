@@ -223,4 +223,22 @@ public class AlunoController {
         }
         return ResponseEntity.status(response.httpStatus()).body(response);
     }
+
+    @GetMapping("/{alunoId}/cursos-extra")
+    public ResponseEntity<CursoResponse> getExtraCoursesByAlunoId(
+            @Parameter(description = "ID do aluno", example = "1")
+            @PathVariable Long alunoId,
+            @RequestHeader(name = "Authorization") String authToken) {
+
+        log.info("GET /alunos/{}/cursos-extra", alunoId);
+        String actualToken = authToken.substring(7);
+        CursoResponse response = alunoService.getExtraCoursesByAlunoId(alunoId, actualToken);
+        if (response.success()) {
+            log.info("GET /alunos/{}/pontuacao -> OK", alunoId);
+        } else {
+            log.error("GET /alunos/{}/pontuacao -> {}", alunoId, response.httpStatus());
+        }
+        return ResponseEntity.status(response.httpStatus()).body(response);
+    }
+
 }
