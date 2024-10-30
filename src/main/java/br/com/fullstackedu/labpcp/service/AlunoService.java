@@ -217,8 +217,34 @@ public class AlunoService {
         }
     }
 
+
+
     public long count() {
         return alunoRepository.count();
+    }
+
+    public CursoResponse getCourseByAlunoId(Long alunoId, String actualToken)
+    {
+        try {
+        if (!_isAuthorized(actualToken)) {
+            String errMessage = "O Usuário logado não tem acesso a essa funcionalidade";
+            log.error(errMessage);
+            return new CursoResponse(false, LocalDateTime.now(), errMessage, null, HttpStatus.UNAUTHORIZED);
+        }
+
+            AlunoEntity targetAluno = alunoRepository.findById(alunoId).orElse(null);
+            if (Objects.isNull(targetAluno)) {
+                return new CursoResponse(false, LocalDateTime.now(), "Aluno ID " + alunoId + " não encontrado.", null, HttpStatus.NOT_FOUND);
+            }
+
+            var targetturma = targetAluno.getTurma().getCurso();
+
+            return new CursoResponse(true, LocalDateTime.now(), "Curso do aluno encontrado", Collections.singletonList(targetturma), HttpStatus.OK);
+
+        } catch (Exception e) {
+            log.error("Falha ao acessar o curso do aluno {}. Erro: {}", alunoId, e.getMessage());
+            return new CursoResponse(false, LocalDateTime.now(), e.getMessage(), null, HttpStatus.BAD_REQUEST);
+        }
     }
 
 
