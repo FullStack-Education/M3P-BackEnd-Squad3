@@ -124,6 +124,20 @@ public class InitService {
             entity.setId(id);
             entity.setNome(nome);
             entity.setDataNascimento(LocalDate.now());
+            entity.setTelefone("4899999999");
+            entity.setGenero("outro");
+            entity.setEstadoCivil("solteiro");
+            entity.setEmail("mail@mail.com");
+            entity.setEmail("mail@mail.com");
+            entity.setCpf("mail@mail.com");
+            entity.setCpf("00000000000");
+            entity.setRg("4444444");
+            entity.setNaturalidade("brasil");
+            entity.setCep("88000000");
+            entity.setLogadouro("rua sem fim");
+            entity.setNumero("7070");
+            entity.setCidade("pinhacinho");
+            entity.setComplemento("casa");
             var papel = papelRepository.findByNome("ALUNO").orElseThrow(() -> new RuntimeException("Papel não encotrado"));
             var curso = usuarioRepository.findByLoginAndPapelId(loginUsuario, papel.getId()).orElseThrow(() -> new NotFoundException("Usuario não encontrado"));
             entity.setUsuario(curso);
@@ -167,12 +181,12 @@ public class InitService {
         log.info("InitService -> Verificando necessidade de inserir usuários iniciais ");
         Long id = 1L;
         insertIfNotExistsUsuarioEntity(id++, "ADM", "ADM", "ADM");
-        insertIfNotExistsUsuarioEntity(id++, "admin@mail.com", "admin", "ADM");
+        insertIfNotExistsUsuarioEntity(id++, "admin@mail.com", "admin@mail.com", "ADM");
         //TODO encapsule the users bellow to env "test"
-        insertIfNotExistsUsuarioEntity(id++, "pedagogico@mail.com", "pedagogico", "PEDAGOGICO");
-        insertIfNotExistsUsuarioEntity(id++, "recruiter@mail.com", "recruiter", "RECRUITER");
-        insertIfNotExistsUsuarioEntity(id++, "professor@mail.com", "professor", "PROFESSOR");
-        insertIfNotExistsUsuarioEntity(id++, "aluno@mail.com", "aluno", "ALUNO");
+        insertIfNotExistsUsuarioEntity(id++, "pedagogico@mail.com", "pedagogico@mail.com", "PEDAGOGICO");
+        insertIfNotExistsUsuarioEntity(id++, "recruiter@mail.com", "recruiter@mail.com", "RECRUITER");
+        insertIfNotExistsUsuarioEntity(id++, "professor@mail.com", "professor@mail.com", "PROFESSOR");
+        insertIfNotExistsUsuarioEntity(id++, "aluno@mail.com", "aluno@mail.com", "ALUNO");
 
         //professores
         log.info("InitService -> Cria profesores");
