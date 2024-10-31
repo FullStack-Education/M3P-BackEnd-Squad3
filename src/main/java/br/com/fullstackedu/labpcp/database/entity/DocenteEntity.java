@@ -41,15 +41,15 @@ public class DocenteEntity {
         private LocalDate dataNascimento;
 
         @NotNull
-        @Column(nullable = false, unique = true)
+        @Column(nullable = false)
         private String email;
 
         @NotNull
-        @Column(nullable = false, unique = true)
+        @Column(nullable = false)
         private String CPF;
 
         @NotNull
-        @Column(nullable = false, unique = true)
+        @Column(nullable = false)
         private String RG;
 
         @NotNull
