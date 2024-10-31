@@ -13,7 +13,6 @@ public record DocenteCreateRequest(
         String nome,
 
         @NotNull(message = "o parametro data_entrada é obrigatório no formato dd/MM/yyyy")
-        @JsonFormat(pattern = "dd/MM/yyyy")
         LocalDate data_entrada,
 
         @NotNull(message = "O telefone do Docente é obrigatório")
@@ -26,7 +25,6 @@ public record DocenteCreateRequest(
         String estadoCivil,
 
         @NotNull(message = "A data de nascimento é obrigatória no formato dd/MM/yyyy")
-        @JsonFormat(pattern = "dd/MM/yyyy")
         LocalDate dataNascimento,
 
         @NotNull(message = "O email é obrigatório")

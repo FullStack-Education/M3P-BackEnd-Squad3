@@ -9,12 +9,10 @@ import java.util.Objects;
 @Schema(description = "Objeto de edição do docente")
 public record DocenteUpdateRequest(
         String nome,
-        @JsonFormat(pattern = "dd/MM/yyyy")
         LocalDate data_entrada,
         String telefone,
         String genero,
         String estadoCivil,
-        @JsonFormat(pattern = "dd/MM/yyyy")
         LocalDate dataNascimento,
         String email,
         String CPF,
