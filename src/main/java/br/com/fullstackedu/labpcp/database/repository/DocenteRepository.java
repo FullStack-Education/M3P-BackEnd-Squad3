@@ -6,5 +6,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.Optional;
 
 public interface DocenteRepository extends JpaRepository<DocenteEntity, Long> {
+    Optional<DocenteEntity> findByUsuarioId(Long id_usuario);
     Optional<DocenteEntity> findByNome(String nome);
 }
