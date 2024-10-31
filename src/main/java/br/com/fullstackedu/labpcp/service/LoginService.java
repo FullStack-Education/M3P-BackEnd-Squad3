@@ -2,7 +2,11 @@ package br.com.fullstackedu.labpcp.service;
 
 import br.com.fullstackedu.labpcp.controller.dto.request.LoginRequest;
 import br.com.fullstackedu.labpcp.controller.dto.response.LoginResponse;
+import br.com.fullstackedu.labpcp.database.entity.AlunoEntity;
+import br.com.fullstackedu.labpcp.database.entity.DocenteEntity;
 import br.com.fullstackedu.labpcp.database.entity.UsuarioEntity;
+import br.com.fullstackedu.labpcp.database.repository.AlunoRepository;
+import br.com.fullstackedu.labpcp.database.repository.DocenteRepository;
 import br.com.fullstackedu.labpcp.database.repository.UsuarioRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,6 +19,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 @Slf4j
 @Service
@@ -23,6 +28,8 @@ public class LoginService {
 
     private static final long EXPIRATION_TIME = 72000L;
     private final UsuarioRepository usuarioRepository;
+    private final AlunoRepository alunoRepository;
+    private final DocenteRepository docenteRepository;
     private final BCryptPasswordEncoder bCryptEncoder;
     private final JwtEncoder jwtEncoder;
     private final JwtDecoder jwtDecoder;
@@ -64,6 +71,22 @@ public class LoginService {
             String scope = usuarioEntity.getPapel().getNome();
             Long id_usuario = usuarioEntity.getId();
             String nome = usuarioEntity.getNome();
+            Long id_aluno = 0L;
+            Long id_docente = 0L;
+            if(scope.equals("ALUNO") ){
+              var aluno = alunoRepository.findByUsuarioId(id_usuario).orElse(null);
+                if(!Objects.isNull(aluno)){
+                    id_aluno = aluno.getId();
+                }
+
+            }else {
+                var docente = docenteRepository.findByUsuarioId(id_usuario).orElse(null);
+                if(!Objects.isNull(docente)){
+                    id_docente = docente.getId();
+                }
+
+            }
+
 
             JwtClaimsSet claims = JwtClaimsSet.builder()
                     .issuer("labpcp_system")
@@ -72,6 +95,8 @@ public class LoginService {
                     .subject(usuarioEntity.getId().toString())  // token owner
                     .claim("scope", scope)
                     .claim("id_usuario", id_usuario)
+                    .claim("id_docente", id_docente)
+                    .claim("id_aluno", id_aluno)
                     .claim("name", nome)
                     .build();
             log.info("claims: [{}]", claims);

@@ -153,6 +153,7 @@ public class InitService {
             log.info("InitService -> Inserindo a nota [{}] ", id);
             var entity = new NotaEntity();
             entity.setId(id);
+            entity.setNome("lorem"+id);
             entity.setAluno(aluno);
             entity.setData(LocalDate.now());
             var professor = docenteRepository.findByNome(nomeProfessor).orElseThrow(() -> new NotFoundException("Professor não encontrado"));
@@ -198,7 +199,7 @@ public class InitService {
                 "duda@mail.com",
                 "hugo@mail.com"};
         for (String emailProfessore : emailProfessores) {
-            insertIfNotExistsUsuarioEntity(id++, emailProfessore, "professor", "PROFESSOR");
+            insertIfNotExistsUsuarioEntity(id++, emailProfessore, "123456", "PROFESSOR");
         }
 
 
@@ -212,7 +213,7 @@ public class InitService {
                 "alice@mail.com"};
         index = 0;
         for (String emailAluno : emailAlunos) {
-            insertIfNotExistsUsuarioEntity(id++, emailAluno, "aluno", "ALUNO");
+            insertIfNotExistsUsuarioEntity(id++, emailAluno, "123456", "ALUNO");
         }
 
 
