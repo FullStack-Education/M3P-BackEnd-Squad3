@@ -24,6 +24,61 @@ public class DocenteEntity {
         private LocalDate dataEntrada;
 
 
+        @NotNull
+        @Column(nullable = false)
+        private String telefone;
+
+        @NotNull
+        @Column(nullable = false)
+        private String genero;
+
+        @NotNull
+        @Column(nullable = false)
+        private String estadoCivil;
+
+        @NotNull
+        @Column(nullable = false)
+        private LocalDate dataNascimento;
+
+        @NotNull
+        @Column(nullable = false)
+        private String email;
+
+        @NotNull
+        @Column(nullable = false)
+        private String CPF;
+
+        @NotNull
+        @Column(nullable = false)
+        private String RG;
+
+        @NotNull
+        @Column(nullable = false)
+        private String naturalidade;
+
+        @NotNull
+        @Column(nullable = false)
+        private String cep;
+
+        @NotNull
+        @Column(nullable = false)
+        private String logradouro;
+
+        @NotNull
+        @Column(nullable = false)
+        private String numero;
+
+        @NotNull
+        @Column(nullable = false)
+        private String cidade;
+
+        @NotNull
+        @Column(nullable = false)
+        private String estado;
+
+        @Column
+        private String complemento;
+
         @ManyToOne
         @JoinColumn(name = "id_usuario")
         @NotNull(message = "É necessário um Usuário Valido para cadastrar um Docente")
