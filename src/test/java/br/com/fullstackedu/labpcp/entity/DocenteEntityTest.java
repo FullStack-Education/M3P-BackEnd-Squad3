@@ -12,8 +12,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public class DocenteEntityTest {
-
-
     private DocenteEntity docente;
 
     @BeforeEach
@@ -36,7 +34,7 @@ public class DocenteEntityTest {
         docente.setEstado("SP");
         docente.setComplemento("Apt 101");
 
-//        docente.setMaterias(new HashSet<>());
+        docente.setMaterias(new HashSet<>());
     }
 
     @Test
@@ -59,15 +57,15 @@ public class DocenteEntityTest {
         assertEquals("Apt 101", docente.getComplemento());
     }
 
-//    @Test
-//    void testAddMateria() {
-//        MateriaEntity materia = new MateriaEntity();
-//        materia.setNome("Matemática");
-//
-//        docente.addMateria(materia);
-//
-//        assertNotNull(docente.getMaterias());
-//        assertEquals(1, docente.getMaterias().size());
-//        assertEquals("Matemática", docente.getMaterias().iterator().next().getNome());
-//    }
+    @Test
+    void testAddMateria() {
+        MateriaEntity materia = new MateriaEntity();
+        materia.setNome("Matemática");
+
+        docente.addMateria(materia);
+
+        assertNotNull(docente.getMaterias());
+        assertEquals(1, docente.getMaterias().size());
+        assertEquals("Matemática", docente.getMaterias().iterator().next().getNome());
+    }
 }
