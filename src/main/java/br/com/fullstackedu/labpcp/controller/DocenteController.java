@@ -17,6 +17,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+@CrossOrigin(origins = "http://localhost:4200", maxAge = 3600)
 @RestController
 @RequestMapping("/docentes")
 @Slf4j
@@ -126,6 +127,7 @@ public class DocenteController {
         }
         return ResponseEntity.status(response.httpStatus()).body(response);
     }
+
     @Operation(summary = "Excluir docente por ID")
     @ApiResponses(value = {
             @ApiResponse(
@@ -161,5 +163,48 @@ public class DocenteController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public ResponseEntity<String> deleteAllDocentes(){
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Rota DELETE disponível apenas para registos individuais. Ex: /docentes/ID");
+    }
+
+    @Operation(summary = "Adicionar Materia ao Docente")
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Docente alterado"
+            ),
+    })
+    @PostMapping("/{docenteId}/materias/{materiaId}")
+    public ResponseEntity<NovoDocenteResponse> adicionarMateria(
+            @RequestHeader(name = "Authorization") String authToken,
+            @Parameter(description = "ID do docente", example = "1")
+            @PathVariable Long docenteId,
+            @Parameter(description = "ID do da materia", example = "1")
+            @PathVariable Long materiaId) {
+            log.info("POST /docentes/{}/materias/{} ", docenteId ,materiaId);
+            String actualToken = authToken.substring(7);
+            NovoDocenteResponse response = docenteService.addMateriaDocente(materiaId, docenteId, actualToken);
+            if (response.success()) {
+                log.info("PUT /docentes -> OK ");
+            } else {
+                log.error("PUT /docentes -> 400");
+            }
+            return ResponseEntity.status(response.httpStatus()).body(response);
+    }
+
+    @DeleteMapping("/{docenteId}/materias/{materiaId}")
+    public ResponseEntity<NovoDocenteResponse> removerMateria(
+            @RequestHeader(name = "Authorization") String authToken,
+            @Parameter(description = "ID do docente", example = "1")
+            @PathVariable Long docenteId,
+            @Parameter(description = "ID da materia", example = "1")
+            @PathVariable Long materiaId) {
+        log.info("DELETE /{}/materias/{}", docenteId, materiaId);
+        String actualToken = authToken.substring(7);
+        NovoDocenteResponse response = docenteService.deleteMateriaDocente(materiaId, docenteId, actualToken);
+        if (response.success()) {
+            log.info("DELETE /docentes -> OK ");
+        } else {
+            log.error("DELETE /docentes -> 400");
+        }
+        return ResponseEntity.status(response.httpStatus()).body(response);
     }
 }
