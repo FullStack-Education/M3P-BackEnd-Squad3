@@ -18,7 +18,7 @@ import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
-public class DocenteRequestValidationTest {
+public class DocenteCreateRequestValidationTest {
 
     private Validator validator;
 
