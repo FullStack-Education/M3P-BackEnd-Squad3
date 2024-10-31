@@ -92,6 +92,21 @@ public class InitService {
             entity.setId(id);
             entity.setNome(nome);
             entity.setDataEntrada(LocalDate.now());
+            entity.setTelefone("48999999999");
+            entity.setGenero("outros");
+            entity.setEstadoCivil("solteiro");
+            entity.setDataNascimento(LocalDate.now());
+            entity.setEmail(loginUsuario);
+            entity.setCPF("88888888888");
+            entity.setRG("44444444");
+            entity.setNaturalidade("brasileiro");
+            entity.setCep("88134000");
+            entity.setLogradouro("rua sem fim");
+            entity.setNumero("7070");
+            entity.setCidade("pinhacinho");
+            entity.setEstado("SC");
+            entity.setComplemento("casa");
+
             var papel = papelRepository.findByNome("PROFESSOR").orElseThrow(() -> new RuntimeException("Papel não encotrado"));
             var curso = usuarioRepository.findByLoginAndPapelId(loginUsuario, papel.getId()).orElseThrow(() -> new NotFoundException("Usuario não encontrado"));
             entity.setUsuario(curso);
