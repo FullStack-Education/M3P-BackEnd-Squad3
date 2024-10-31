@@ -33,7 +33,7 @@ public class AlunoService {
     private final TurmaRepository turmaRepository;
     private final CursoRepository cursoRepository;
 
-    private static final List<String> commonPermissions = List.of("ADM", "PEDAGOGICO");
+    private static final List<String> commonPermissions = List.of("ADM", "PEDAGOGICO", "ALUNO");
     private static final List<String> deletePermission = List.of("ADM");
 
     private boolean _isAuthorized(String actualToken, List<String> authorizedPerfis) {
