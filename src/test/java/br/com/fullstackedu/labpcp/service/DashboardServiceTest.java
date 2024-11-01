@@ -71,6 +71,18 @@ class DashboardServiceTest {
         verify(docenteService).count();
     }
 
+    @Test
+    void testGetCounts_ServiceThrowsException() {
+        String token = "validToken";
+        when(loginService.getFieldInToken(anyString(), eq("scope"))).thenReturn("ADM");
+        when(alunoService.count()).thenThrow(new RuntimeException("Database error"));
+
+        DashboardResponse response = dashboardService.getCounts(token);
+
+        assertEquals(HttpStatus.BAD_REQUEST, response.httpStatus());
+        assertEquals("Database error", response.message());
+    }
+
 }
 
 
