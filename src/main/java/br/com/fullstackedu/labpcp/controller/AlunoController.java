@@ -3,13 +3,13 @@ package br.com.fullstackedu.labpcp.controller;
 import br.com.fullstackedu.labpcp.controller.dto.request.AlunoRequest;
 
 import br.com.fullstackedu.labpcp.controller.dto.request.AlunoUpdateRequest;
-import br.com.fullstackedu.labpcp.controller.dto.response.AlunoResponse;
+import br.com.fullstackedu.labpcp.controller.dto.response.*;
 
-import br.com.fullstackedu.labpcp.controller.dto.response.AlunoScoreResponse;
-import br.com.fullstackedu.labpcp.controller.dto.response.CursoResponse;
-import br.com.fullstackedu.labpcp.controller.dto.response.NotaResponse;
+import br.com.fullstackedu.labpcp.database.entity.UsuarioEntity;
 import br.com.fullstackedu.labpcp.service.AlunoService;
 import br.com.fullstackedu.labpcp.service.NotaService;
+import br.com.fullstackedu.labpcp.service.PapelService;
+import br.com.fullstackedu.labpcp.service.UsuarioService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -23,6 +23,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDateTime;
+
 @CrossOrigin(origins = "http://localhost:4200", maxAge = 3600)
 @RestController
 @RequestMapping("/alunos")
@@ -33,6 +36,8 @@ import org.springframework.web.bind.annotation.*;
 public class AlunoController {
     private final AlunoService alunoService;
     private final NotaService notaService;
+    private final UsuarioService usuarioService;
+    private final PapelService papelService;
 
     @Operation(summary = "Cadastrar novo aluno")
     @ApiResponses(value = {
@@ -52,7 +57,43 @@ public class AlunoController {
         log.info("POST /alunos ");
 
         String actualToken = authToken.substring(7);
-        AlunoResponse response = alunoService.insertAluno(alunoRequest, actualToken);
+        UsuarioEntity newUser = new UsuarioEntity();
+        newUser.setNome(alunoRequest.nome());
+        newUser.setLogin(alunoRequest.email());
+        newUser.setSenha(alunoRequest.senha());
+        newUser.setPapel(
+                papelService.getPapelById(alunoRequest.id_papel())
+        );
+
+        NovoUsuarioResponse novo = usuarioService.novoUsuario(newUser, actualToken);
+        if(!novo.success()){
+            String errMessage = "Erro ao cadastrar aluno: dados ja cadastrados";
+            log.error(errMessage);
+            return ResponseEntity.status(novo.httpStatus()).body(new AlunoResponse(false, LocalDateTime.now(), errMessage, null, HttpStatus.NOT_FOUND));
+        }
+
+        AlunoRequest novoAlun0 = new AlunoRequest(
+                alunoRequest.nome(),
+                alunoRequest.data_nascimento(),
+                novo.usuarioEntity().getId(),
+                alunoRequest.id_turma(),
+                alunoRequest.telefone(),
+                alunoRequest.genero(),
+                alunoRequest.estadoCivil(),
+                alunoRequest.email(),
+                alunoRequest.cpf(),
+                alunoRequest.rg(),
+                alunoRequest.naturalidade(),
+                alunoRequest.senha(),
+                alunoRequest.id_papel(),
+                alunoRequest.cep(),
+                alunoRequest.logadouro(),
+                alunoRequest.numero(),
+                alunoRequest.cidade(),
+                alunoRequest.complemento()
+                );
+
+        AlunoResponse response = alunoService.insertAluno(novoAlun0, actualToken);
         if (response.success()){
             log.info("POST /alunos -> Aluno cadastrado com sucesso.");
         } else {
