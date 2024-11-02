@@ -562,4 +562,51 @@ public class NotaServiceTest {
         assertEquals(false, response.success());
         assertEquals("Database error", response.message());
     }
+
+    @Test
+    void testDeleteNota_Success() {
+        String token = "validToken";
+        when(loginService.getFieldInToken(token, "scope")).thenReturn("ADM");
+        NotaEntity nota = new NotaEntity();
+        when(notaRepository.findById(1L)).thenReturn(Optional.of(nota));
+
+        NotaResponse response = notaService.deleteNota(1L, token);
+
+        assertEquals(HttpStatus.NO_CONTENT, response.httpStatus());
+        assertEquals("Nota id [1] excluido", response.message());
+    }
+
+    @Test
+    void testDeleteNota_FailureByException() {
+        String token = "validToken";
+        when(loginService.getFieldInToken(token, "scope")).thenReturn("ADM");
+        when(notaRepository.findById(1L)).thenThrow(new RuntimeException("Database error"));
+
+
+        NotaResponse respose =  notaService.deleteNota(1L, token);
+        assertEquals("Database error", respose.message());
+    }
+
+    @Test
+    void testDeleteNota_UnauthorizedAccess() {
+        String token = "invalidToken";
+        when(loginService.getFieldInToken(token, "scope")).thenReturn("ALUNO");
+
+        NotaResponse response = notaService.deleteNota(1L, token);
+
+        assertEquals(HttpStatus.UNAUTHORIZED, response.httpStatus());
+        assertEquals("O Usuário logado não tem acesso a essa funcionalidade", response.message());
+    }
+
+    @Test
+    void testDeleteNota_NotaNotFound() {
+        String token = "validToken";
+        when(loginService.getFieldInToken(token, "scope")).thenReturn("ADM");
+        when(notaRepository.findById(1L)).thenReturn(Optional.empty());
+
+        NotaResponse response = notaService.deleteNota(1L, token);
+
+        assertEquals(HttpStatus.NOT_FOUND, response.httpStatus());
+        assertEquals("Nota id [1] não encontrada", response.message());
+    }
 }
