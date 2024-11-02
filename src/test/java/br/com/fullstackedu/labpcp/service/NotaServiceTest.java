@@ -609,4 +609,107 @@ public class NotaServiceTest {
         assertEquals(HttpStatus.NOT_FOUND, response.httpStatus());
         assertEquals("Nota id [1] não encontrada", response.message());
     }
+
+    @Test
+    void testGetScoreByAlunoId_CommonSuccess() {
+        String token = "validToken";
+        when(loginService.getFieldInToken(token, "scope")).thenReturn("ADM");
+
+        when(alunoRepository.findById(alunoEntity.getId())).thenReturn(Optional.of(alunoEntity));
+        when(notaRepository.findByAlunoId(alunoEntity.getId())).thenReturn(notaList);
+
+        AlunoScoreResponse response = notaService.getScoreByAlunoId(alunoEntity.getId(), token);
+
+        System.out.println("Mensagem da resposta: "+ response.message());
+
+        assertEquals(HttpStatus.OK, response.httpStatus());
+        assertEquals(true, response.success());
+        assertEquals("Pontuação calculada com sucesso", response.message());
+    }
+
+    @Test
+    void testGetScoreByAlunoId_OwnerSuccess() {
+        String token = "validToken";
+        when(loginService.getFieldInToken(token, "scope")).thenReturn("ALUNO");
+        when(loginService.getFieldInToken(token, "id_usuario")).thenReturn("0");
+        when(alunoRepository.findByUsuarioId(0L)).thenReturn(Optional.of(alunoEntity));
+
+        when(alunoRepository.findById(alunoEntity.getId())).thenReturn(Optional.of(alunoEntity));
+        when(notaRepository.findByAlunoId(alunoEntity.getId())).thenReturn(notaList);
+
+        AlunoScoreResponse response = notaService.getScoreByAlunoId(notaEntity.getId(), token);
+
+        System.out.println("Mensagem da resposta: "+ response.message());
+
+        assertEquals(HttpStatus.OK, response.httpStatus());
+        assertEquals(true, response.success());
+        assertEquals("Pontuação calculada com sucesso", response.message());
+    }
+
+    @Test
+    void testGetScoreByAlunoId_UnauthorizedAccess() {
+        String token = "invalidToken";
+        when(loginService.getFieldInToken(token, "scope")).thenReturn("ANY");
+
+        AlunoScoreResponse response = notaService.getScoreByAlunoId(notaEntity.getId(), token);
+
+        System.out.println("Mensagem da resposta: "+ response.message());
+
+        assertEquals(HttpStatus.UNAUTHORIZED, response.httpStatus());
+        assertEquals(false, response.success());
+        assertEquals("O Usuário logado não tem acesso a essa funcionalidade", response.message());
+    }
+
+    @Test
+    void testGetScoreByAlunoId_UnauthorizedAccessFromOtherStudents() {
+        String token = "validToken";
+        when(loginService.getFieldInToken(token, "scope")).thenReturn("ALUNO");
+        when(loginService.getFieldInToken(token, "id_usuario")).thenReturn("0");
+        when(alunoRepository.findByUsuarioId(0L)).thenReturn(Optional.empty());
+
+        AlunoScoreResponse response = notaService.getScoreByAlunoId(notaEntity.getId(), token);
+
+        System.out.println("Mensagem da resposta: "+ response.message());
+
+        assertEquals(HttpStatus.UNAUTHORIZED, response.httpStatus());
+        assertEquals(false, response.success());
+        assertEquals("Alunos logados tem acesso someone a suas próprias notas e pontuações.", response.message());
+    }
+
+    @Test
+    void testGetScoreByAlunoId_BadRequest() {
+        String token = "validToken";
+        when(loginService.getFieldInToken(token, "scope")).thenReturn("ADM");
+
+        RuntimeException exception = new RuntimeException("Simulated Bad Request");
+
+        when(alunoRepository.findById(alunoEntity.getId())).thenThrow(exception);
+
+        AlunoScoreResponse response = notaService.getScoreByAlunoId(notaEntity.getId(), token);
+
+        System.out.println("Mensagem da resposta: "+ response.message());
+
+        assertEquals(HttpStatus.BAD_REQUEST, response.httpStatus());
+        assertEquals(false, response.success());
+        assertEquals(exception.getMessage(), response.message());
+    }
+
+    @Test
+    void testGetScoreByAlunoId_NotFound() {
+        String token = "validToken";
+        when(loginService.getFieldInToken(token, "scope")).thenReturn("ADM");
+
+        List<NotaEntity> emptyNotaList = new ArrayList<>();
+
+        when(alunoRepository.findById(alunoEntity.getId())).thenReturn(Optional.of(alunoEntity));
+        when(notaRepository.findByAlunoId(alunoEntity.getId())).thenReturn(emptyNotaList);
+
+        AlunoScoreResponse response = notaService.getScoreByAlunoId(notaEntity.getId(), token);
+
+        System.out.println("Mensagem da resposta: "+ response.message());
+
+        assertEquals(HttpStatus.NOT_FOUND, response.httpStatus());
+        assertEquals(false, response.success());
+        assertEquals("Nenhuma Nota encontrada para o Aluno ID "+ notaEntity.getId(), response.message());
+    }
 }
