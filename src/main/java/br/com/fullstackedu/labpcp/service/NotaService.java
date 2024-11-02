@@ -34,7 +34,7 @@ public class NotaService {
     private static final List<String> admPermission = List.of("ADM");
 
     private boolean _isAuthorized(String actualToken, List<String> authorizedPerfis) {
-        String papelName =  loginService.getFieldInToken(actualToken, "scope");
+        String papelName = loginService.getFieldInToken(actualToken, "scope");
         return authorizedPerfis.contains(papelName);
     }
     private boolean _isAuthorized(String actualToken) {
@@ -174,7 +174,7 @@ public class NotaService {
 
             if (_isAuthorized(actualToken, ownerPermissions)){
                 Long usuarioId = Long.valueOf(loginService.getFieldInToken(actualToken, "id_usuario"));
-                AlunoEntity loggedAluno =  alunoRepository.findByUsuarioId(usuarioId).orElse(null);
+                AlunoEntity loggedAluno = alunoRepository.findByUsuarioId(usuarioId).orElse(null);
                 if (loggedAluno != null && Objects.equals(loggedAluno.getId(), alunoId)) {
                     return _getByAlunoId(alunoId);
                 } else return NotaResponse.createErrorResponse(
@@ -331,7 +331,7 @@ public class NotaService {
                     return _getScoreByAlunoId(alunoId);
                 } else return AlunoScoreResponse.createErrorResponse(
                         HttpStatus.UNAUTHORIZED,
-                        "Alunos logados tem acesso someone a suas próprias notas e pontuções.");
+                        "Alunos logados tem acesso someone a suas próprias notas e pontuações.");
             }
             return AlunoScoreResponse.createErrorResponse(
                     HttpStatus.UNAUTHORIZED,
