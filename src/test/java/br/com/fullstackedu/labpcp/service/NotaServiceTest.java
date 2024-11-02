@@ -433,4 +433,133 @@ public class NotaServiceTest {
         assertEquals(false, response.success());
         assertEquals("Nenhuma Nota encontrada para o Aluno ID "+ notaEntity.getId(), response.message());
     }
+
+    @Test
+    void testUpdateNota_Success() {
+        String token = "validToken";
+        when(loginService.getFieldInToken(token, "scope")).thenReturn("ADM");
+
+        when(notaRepository.findById(any(Long.class))).thenReturn(Optional.of(notaEntity));
+        when(alunoRepository.findById(any(Long.class))).thenReturn(Optional.of(alunoEntity));
+        when(materiaRepository.findById(any(Long.class))).thenReturn(Optional.of(materiaEntity));
+        when(docenteRepository.findById(any(Long.class))).thenReturn(Optional.of(docenteEntity));
+        when(turmaRepository.findById(any(Long.class))).thenReturn(Optional.of(turmaEntity));
+        when(notaRepository.save(any(NotaEntity.class))).thenReturn(notaEntity);
+
+        NotaResponse response = notaService.updateNota(notaEntity.getId(), notaUpdateRequest, token);
+
+        System.out.println("Mensagem da resposta: "+ response.message());
+
+        assertEquals(HttpStatus.OK, response.httpStatus());
+        assertEquals(true, response.success());
+        assertEquals("Nota atualizada", response.message());
+    }
+
+    @Test
+    void testUpdateNota_NotaNotFound() {
+        String token = "validToken";
+        when(loginService.getFieldInToken(token, "scope")).thenReturn("ADM");
+        when(notaRepository.findById(1L)).thenReturn(Optional.empty());
+
+        NotaResponse response = notaService.updateNota(1L, notaUpdateRequest, token);
+
+        assertEquals(HttpStatus.NOT_FOUND, response.httpStatus());
+        assertEquals(false, response.success());
+        assertEquals("Nota id [1] não encontrado", response.message());
+    }
+
+    @Test
+    void testUpdateNota_UnauthorizedAccess() {
+        String token = "invalidToken";
+        when(loginService.getFieldInToken(token, "scope")).thenReturn("ALUNO");
+
+        NotaResponse response = notaService.updateNota(1L, notaUpdateRequest, token);
+
+        assertEquals(HttpStatus.UNAUTHORIZED, response.httpStatus());
+        assertEquals(false, response.success());
+        assertEquals("O Usuário logado não tem acesso a essa funcionalidade", response.message());
+    }
+
+    @Test
+    void testUpdateNota_AlunoNotFound() {
+        String token = "validToken";
+        when(loginService.getFieldInToken(token, "scope")).thenReturn("ADM");
+        NotaEntity nota = new NotaEntity();
+        when(notaRepository.findById(1L)).thenReturn(Optional.of(nota));
+
+        when(alunoRepository.findById(any(Long.class))).thenReturn(Optional.empty());
+
+        NotaResponse response = notaService.updateNota(1L, notaUpdateRequest, token);
+
+        assertEquals(HttpStatus.NOT_FOUND, response.httpStatus());
+        assertEquals(false, response.success());
+        assertEquals("Aluno id ["+ notaUpdateRequest.id_materia() +"] não encontrado", response.message());
+    }
+
+    @Test
+    void testUpdateNota_MateriaNotFound() {
+        String token = "validToken";
+        when(loginService.getFieldInToken(token, "scope")).thenReturn("ADM");
+        NotaEntity nota = new NotaEntity();
+        when(notaRepository.findById(1L)).thenReturn(Optional.of(nota));
+
+        when(alunoRepository.findById(any(Long.class))).thenReturn(Optional.of(alunoEntity));
+        when(materiaRepository.findById(any(Long.class))).thenReturn(Optional.empty());
+
+        NotaResponse response = notaService.updateNota(1L, notaUpdateRequest, token);
+
+        assertEquals(HttpStatus.NOT_FOUND, response.httpStatus());
+        assertEquals(false, response.success());
+        assertEquals("Materia id ["+ notaUpdateRequest.id_materia() +"] não encontrado", response.message());
+    }
+
+    @Test
+    void testUpdateNota_DocenteNotFound() {
+        String token = "validToken";
+        when(loginService.getFieldInToken(token, "scope")).thenReturn("ADM");
+        NotaEntity nota = new NotaEntity();
+        when(notaRepository.findById(1L)).thenReturn(Optional.of(nota));
+
+        when(alunoRepository.findById(any(Long.class))).thenReturn(Optional.of(alunoEntity));
+        when(materiaRepository.findById(any(Long.class))).thenReturn(Optional.of(materiaEntity));
+        when(docenteRepository.findById(any(Long.class))).thenReturn(Optional.empty());
+
+        NotaResponse response = notaService.updateNota(1L, notaUpdateRequest, token);
+
+        assertEquals(HttpStatus.NOT_FOUND, response.httpStatus());
+        assertEquals(false, response.success());
+        assertEquals("Docente id ["+ notaUpdateRequest.id_professor() +"] não encontrado", response.message());
+    }
+
+    @Test
+    void testUpdateNota_TurmaNotFound() {
+        String token = "validToken";
+        when(loginService.getFieldInToken(token, "scope")).thenReturn("ADM");
+        NotaEntity nota = new NotaEntity();
+        when(notaRepository.findById(1L)).thenReturn(Optional.of(nota));
+
+        when(alunoRepository.findById(any(Long.class))).thenReturn(Optional.of(alunoEntity));
+        when(materiaRepository.findById(any(Long.class))).thenReturn(Optional.of(materiaEntity));
+        when(docenteRepository.findById(any(Long.class))).thenReturn(Optional.of(docenteEntity));
+        when(turmaRepository.findById(any(Long.class))).thenReturn(Optional.empty());
+
+        NotaResponse response = notaService.updateNota(1L, notaUpdateRequest, token);
+
+        assertEquals(HttpStatus.NOT_FOUND, response.httpStatus());
+        assertEquals(false, response.success());
+        assertEquals("Turma id ["+ notaUpdateRequest.id_materia() +"] não encontrado", response.message());
+    }
+
+    @Test
+    void testUpdateNota_FailureByException() {
+        String token = "validToken";
+        when(loginService.getFieldInToken(token, "scope")).thenReturn("ADM");
+        when(notaRepository.findById(1L)).thenThrow(new RuntimeException("Database error"));
+
+        NotaResponse response = notaService.updateNota(1L, notaUpdateRequest, token);
+
+        assertEquals(HttpStatus.BAD_REQUEST, response.httpStatus());
+        assertEquals(false, response.success());
+        assertEquals("Database error", response.message());
+    }
 }
