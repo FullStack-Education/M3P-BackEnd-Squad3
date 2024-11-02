@@ -215,4 +215,120 @@ public class NotaServiceTest {
         assertEquals("Erro ao cadastrar nota: Nenhuma turma com id [" + notaRequest.id_materia() + "] encontrada",
                 response.message());
     }
+
+    @Test
+    void testGetNota_CommonSuccess() {
+        String token = "validToken";
+        when(loginService.getFieldInToken(token, "scope")).thenReturn("ADM");
+
+        when(notaRepository.findById(any(Long.class))).thenReturn(Optional.of(notaEntity));
+
+        NotaResponse response = notaService.getById(notaEntity.getId(), token);
+
+        System.out.println("Mensagem da resposta: "+ response.message());
+
+        assertEquals(HttpStatus.OK, response.httpStatus());
+        assertEquals(true, response.success());
+        assertEquals("Nota encontrada", response.message());
+    }
+
+    @Test
+    void testGetNota_OwnerSuccess() {
+        String token = "validToken";
+        when(loginService.getFieldInToken(token, "scope")).thenReturn("ALUNO");
+        when(loginService.getFieldInToken(token, "id_usuario")).thenReturn("0");
+        when(alunoRepository.findByUsuarioId(0L)).thenReturn(Optional.of(alunoEntity));
+
+        when(notaRepository.findByIdAndAlunoId(notaEntity.getId(), alunoEntity.getId())).thenReturn(Optional.of(notaEntity));
+
+        NotaResponse response = notaService.getById(notaEntity.getId(), token);
+
+        System.out.println("Mensagem da resposta: "+ response.message());
+
+        assertEquals(HttpStatus.OK, response.httpStatus());
+        assertEquals(true, response.success());
+        assertEquals("Nota encontrada", response.message());
+    }
+
+    @Test
+    void testGetNota_UnauthorizedAccess() {
+        String token = "invalidToken";
+        when(loginService.getFieldInToken(token, "scope")).thenReturn("ANY");
+
+        NotaResponse response = notaService.getById(notaEntity.getId(), token);
+
+        System.out.println("Mensagem da resposta: "+ response.message());
+
+        assertEquals(HttpStatus.UNAUTHORIZED, response.httpStatus());
+        assertEquals(false, response.success());
+        assertEquals("O Usuário logado não tem acesso a essa funcionalidade", response.message());
+    }
+
+    @Test
+    void testGetNota_BadRequest() {
+        String token = "validToken";
+        when(loginService.getFieldInToken(token, "scope")).thenReturn("ADM");
+
+        RuntimeException exception = new RuntimeException("Simulated Bad Request");
+
+        when(notaRepository.findById(any(Long.class))).thenThrow(exception);
+
+        NotaResponse response = notaService.getById(notaEntity.getId(), token);
+
+        System.out.println("Mensagem da resposta: "+ response.message());
+
+        assertEquals(HttpStatus.BAD_REQUEST, response.httpStatus());
+        assertEquals(false, response.success());
+        assertEquals(exception.getMessage(), response.message());
+    }
+
+    @Test
+    void testGetNota_CommonNotFound() {
+        String token = "validToken";
+        when(loginService.getFieldInToken(token, "scope")).thenReturn("ADM");
+
+        when(notaRepository.findById(any(Long.class))).thenReturn(Optional.empty());
+
+        NotaResponse response = notaService.getById(notaEntity.getId(), token);
+
+        System.out.println("Mensagem da resposta: "+ response.message());
+
+        assertEquals(HttpStatus.NOT_FOUND, response.httpStatus());
+        assertEquals(false, response.success());
+        assertEquals("Nota ID "+ notaEntity.getId() +" não encontrada.", response.message());
+    }
+
+    @Test
+    void testGetNota_OwnerAlunoNotFound() {
+        String token = "validToken";
+        when(loginService.getFieldInToken(token, "scope")).thenReturn("ALUNO");
+        when(loginService.getFieldInToken(token, "id_usuario")).thenReturn("0");
+        when(alunoRepository.findByUsuarioId(0L)).thenReturn(Optional.empty());
+
+        NotaResponse response = notaService.getById(notaEntity.getId(), token);
+
+        System.out.println("Mensagem da resposta: "+ response.message());
+
+        assertEquals(HttpStatus.NOT_FOUND, response.httpStatus());
+        assertEquals(false, response.success());
+        assertEquals("Nenhum Aluno foi encontrado para o usuário logado com id [" + notaEntity.getId() + "]", response.message());
+    }
+
+    @Test
+    void testGetNota_OwnerNotaNotFound() {
+        String token = "validToken";
+        when(loginService.getFieldInToken(token, "scope")).thenReturn("ALUNO");
+        when(loginService.getFieldInToken(token, "id_usuario")).thenReturn("0");
+        when(alunoRepository.findByUsuarioId(0L)).thenReturn(Optional.of(alunoEntity));
+
+        when(notaRepository.findByIdAndAlunoId(notaEntity.getId(), alunoEntity.getId())).thenReturn(Optional.empty());
+
+        NotaResponse response = notaService.getById(notaEntity.getId(), token);
+
+        System.out.println("Mensagem da resposta: "+ response.message());
+
+        assertEquals(HttpStatus.NOT_FOUND, response.httpStatus());
+        assertEquals(false, response.success());
+        assertEquals("Nota ID " + notaEntity.getId() + " não encontrada para este aluno.", response.message());
+    }
 }
