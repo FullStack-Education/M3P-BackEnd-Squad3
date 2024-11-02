@@ -15,8 +15,10 @@ public record AlunoRequest (
 //        @JsonFormat(pattern = "dd/MM/yyyy")
         LocalDate data_nascimento,
 
-        @NotNull(message = "Atributo id_usuario é obrigatório")
+//        @NotNull(message = "Atributo id_usuario é obrigatório")
         Long id_usuario,
+
+        @NotNull(message = "Atributo id_turma é obrigatório")
         Long id_turma,
 
         @NotNull(message = "Atributo telefone é obrigatório")
@@ -34,6 +36,12 @@ public record AlunoRequest (
         @NotNull(message = "Atributo naturalidade é obrigatório")
         String naturalidade,
 
+        @NotNull(message = "Atributo senha é obrigatório")
+        String senha,
+
+        @NotNull(message = "Atributo id_papel é obrigatório")
+        Long id_papel,
+
 
         String cep,
         String logadouro,
@@ -41,4 +49,6 @@ public record AlunoRequest (
         String cidade,
         String complemento
 ){
+
+
 }

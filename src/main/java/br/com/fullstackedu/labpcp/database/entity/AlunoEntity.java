@@ -6,6 +6,8 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 import java.time.LocalDate;
+import java.util.List;
+import java.util.Set;
 
 @Data
 @Entity
@@ -63,11 +65,17 @@ public class AlunoEntity {
     @ManyToOne
     @JoinColumn(name = "id_usuario")
     @NotNull(message = "É necessário um Usuário Valido para cadastrar um Aluno")
-    @JsonBackReference
+    @JsonIgnoreProperties("usuario")
     private UsuarioEntity usuario;
 
     @ManyToOne
     @JoinColumn(name = "id_turma")
-    @JsonBackReference
+    @JsonIgnoreProperties("turma")
     private TurmaEntity turma;
+
+
+    @OneToMany(mappedBy = "aluno", fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
+    @JsonBackReference
+    private List<NotaEntity> notas;
+
 }
