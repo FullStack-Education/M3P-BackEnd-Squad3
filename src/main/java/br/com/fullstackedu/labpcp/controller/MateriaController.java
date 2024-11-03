@@ -3,6 +3,7 @@ package br.com.fullstackedu.labpcp.controller;
 import br.com.fullstackedu.labpcp.controller.dto.request.MateriaRequest;
 import br.com.fullstackedu.labpcp.controller.dto.request.MateriaUpdateRequest;
 import br.com.fullstackedu.labpcp.controller.dto.response.MateriaResponse;
+import br.com.fullstackedu.labpcp.controller.dto.response.NovoDocenteResponse;
 import br.com.fullstackedu.labpcp.service.MateriaService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -124,6 +125,21 @@ public class MateriaController {
             log.info("PUT /materias -> OK ");
         } else {
             log.error("PUT /materias -> {}", response.httpStatus());
+        }
+        return ResponseEntity.status(response.httpStatus()).body(response);
+    }
+
+
+    @GetMapping()
+    public ResponseEntity<MateriaResponse> getAllMaterioas(
+            @RequestHeader(name = "Authorization") String authToken) {
+        log.info("GET /docentes ");
+        String actualToken = authToken.substring(7);
+        MateriaResponse response = materiaService.getAllMaterias(actualToken);
+        if (response.success()) {
+            log.info("GET /materias -> OK ");
+        } else {
+            log.error("GET /materias -> 404");
         }
         return ResponseEntity.status(response.httpStatus()).body(response);
     }

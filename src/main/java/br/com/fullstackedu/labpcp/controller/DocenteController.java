@@ -2,8 +2,13 @@ package br.com.fullstackedu.labpcp.controller;
 
 import br.com.fullstackedu.labpcp.controller.dto.request.DocenteCreateRequest;
 import br.com.fullstackedu.labpcp.controller.dto.request.DocenteUpdateRequest;
+import br.com.fullstackedu.labpcp.controller.dto.response.AlunoResponse;
 import br.com.fullstackedu.labpcp.controller.dto.response.NovoDocenteResponse;
+import br.com.fullstackedu.labpcp.controller.dto.response.NovoUsuarioResponse;
+import br.com.fullstackedu.labpcp.database.entity.UsuarioEntity;
 import br.com.fullstackedu.labpcp.service.DocenteService;
+import br.com.fullstackedu.labpcp.service.PapelService;
+import br.com.fullstackedu.labpcp.service.UsuarioService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -17,6 +22,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
+
 @CrossOrigin(origins = "http://localhost:4200", maxAge = 3600)
 @RestController
 @RequestMapping("/docentes")
@@ -25,9 +32,13 @@ import org.springframework.web.bind.annotation.*;
 @Tag(name = "Docente - CRUD", description = "CRUD de docentes")
 public class DocenteController {
     private final DocenteService docenteService;
+    private final UsuarioService usuarioService;
+    private final PapelService papelService;
 
-    public DocenteController(DocenteService docenteService) {
+    public DocenteController(DocenteService docenteService, UsuarioService usuarioService, PapelService papelService) {
         this.docenteService = docenteService;
+        this.usuarioService = usuarioService;
+        this.papelService = papelService;
     }
 
     @Operation(summary = "Cadastrar novo docente")
@@ -47,8 +58,46 @@ public class DocenteController {
     ) throws Exception {
         log.info("POST /docentes -> Novo Docente ");
         String actualToken = authToken.substring(7);
-        NovoDocenteResponse response = docenteService.novoDocente(docenteCreateRequest, actualToken);
-        if (response.success()){
+        UsuarioEntity newUser = new UsuarioEntity();
+        newUser.setNome(docenteCreateRequest.nome());
+        newUser.setLogin(docenteCreateRequest.email());
+        newUser.setSenha(docenteCreateRequest.senha());
+        newUser.setPapel(
+                papelService.getPapelById(docenteCreateRequest.id_papel())
+        );
+
+        NovoUsuarioResponse novo = usuarioService.novoUsuario(newUser, actualToken);
+        if (!novo.success()) {
+            String errMessage = "Erro ao cadastrar docentes: dados ja cadastrados";
+            log.error(errMessage);
+            return ResponseEntity.status(novo.httpStatus()).body(new NovoDocenteResponse(false, LocalDateTime.now(), errMessage, null, HttpStatus.NOT_FOUND));
+        }
+
+        DocenteCreateRequest docenteCreateRequest1 = new DocenteCreateRequest(
+                docenteCreateRequest.nome(),
+                docenteCreateRequest.telefone(),
+                docenteCreateRequest.genero(),
+                docenteCreateRequest.estadoCivil(),
+                docenteCreateRequest.dataNascimento(),
+                docenteCreateRequest.email(),
+                docenteCreateRequest.CPF(),
+                docenteCreateRequest.RG(),
+                docenteCreateRequest.naturalidade(),
+                docenteCreateRequest.cep(),
+                docenteCreateRequest.logradouro(),
+                docenteCreateRequest.numero(),
+                docenteCreateRequest.cidade(),
+                docenteCreateRequest.estado(),
+                docenteCreateRequest.complemento(),
+                novo.usuarioEntity().getId(),
+                docenteCreateRequest.senha(),
+                docenteCreateRequest.id_papel(),
+                docenteCreateRequest.id_materias()
+        );
+
+
+        NovoDocenteResponse response = docenteService.novoDocente(docenteCreateRequest1, actualToken);
+        if (response.success()) {
             log.info("POST /docentes -> Docente cadastrado com sucesso.");
         } else {
             log.error("POST /docentes -> Erro ao cadastrar novo Docente: [{}].", response.message());
@@ -73,13 +122,14 @@ public class DocenteController {
         log.info("GET /docente/{} ", docenteId);
         String actualToken = authToken.substring(7);
         NovoDocenteResponse response = docenteService.getDocenteById(docenteId, actualToken);
-        if (response.success()){
+        if (response.success()) {
             log.info("GET /docentes/{} -> OK ", docenteId);
         } else {
             log.error("GET /docentes/{} -> 404", docenteId);
         }
         return ResponseEntity.status(response.httpStatus()).body(response);
     }
+
     @Operation(summary = "Buscar todos os docentes")
     @ApiResponses(value = {
             @ApiResponse(
@@ -102,6 +152,7 @@ public class DocenteController {
         }
         return ResponseEntity.status(response.httpStatus()).body(response);
     }
+
     @Operation(summary = "Editar docente por ID")
     @ApiResponses(value = {
             @ApiResponse(
@@ -119,7 +170,7 @@ public class DocenteController {
             @RequestHeader(name = "Authorization") String authToken) {
         log.info("PUT /docentes");
         String actualToken = authToken.substring(7);
-        NovoDocenteResponse response = docenteService.updateDocente(docenteId , docenteUpdateRequest, actualToken);
+        NovoDocenteResponse response = docenteService.updateDocente(docenteId, docenteUpdateRequest, actualToken);
         if (response.success()) {
             log.info("PUT /docentes -> OK ");
         } else {
@@ -151,6 +202,7 @@ public class DocenteController {
         }
         return ResponseEntity.status(response.httpStatus()).body(response);
     }
+
     @Operation(summary = "Excluir todos os docentes")
     @ApiResponses(value = {
             @ApiResponse(
@@ -161,7 +213,7 @@ public class DocenteController {
 
     @DeleteMapping()
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public ResponseEntity<String> deleteAllDocentes(){
+    public ResponseEntity<String> deleteAllDocentes() {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Rota DELETE disponível apenas para registos individuais. Ex: /docentes/ID");
     }
 
@@ -179,15 +231,15 @@ public class DocenteController {
             @PathVariable Long docenteId,
             @Parameter(description = "ID do da materia", example = "1")
             @PathVariable Long materiaId) {
-            log.info("POST /docentes/{}/materias/{} ", docenteId ,materiaId);
-            String actualToken = authToken.substring(7);
-            NovoDocenteResponse response = docenteService.addMateriaDocente(materiaId, docenteId, actualToken);
-            if (response.success()) {
-                log.info("PUT /docentes -> OK ");
-            } else {
-                log.error("PUT /docentes -> 400");
-            }
-            return ResponseEntity.status(response.httpStatus()).body(response);
+        log.info("POST /docentes/{}/materias/{} ", docenteId, materiaId);
+        String actualToken = authToken.substring(7);
+        NovoDocenteResponse response = docenteService.addMateriaDocente(materiaId, docenteId, actualToken);
+        if (response.success()) {
+            log.info("PUT /docentes -> OK ");
+        } else {
+            log.error("PUT /docentes -> 400");
+        }
+        return ResponseEntity.status(response.httpStatus()).body(response);
     }
 
     @DeleteMapping("/{docenteId}/materias/{materiaId}")

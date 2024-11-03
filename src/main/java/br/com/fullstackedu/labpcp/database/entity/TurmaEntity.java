@@ -1,5 +1,6 @@
 package br.com.fullstackedu.labpcp.database.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
@@ -35,6 +36,10 @@ public class TurmaEntity {
     @JsonIgnore
     List<AlunoEntity> alunos;
 
+    @OneToMany(mappedBy = "turma", fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
+    @JsonBackReference
+    private List<NotaEntity> notas;
+
     @ManyToOne
     @JoinColumn(name = "id_professor")
     @JsonIgnore()
@@ -45,6 +50,8 @@ public class TurmaEntity {
     @NotNull(message = "É necessário um Curso Válido para cadastrar uma turma")
     @JsonIgnore
     private CursoEntity curso;
+
+
 }
 
 

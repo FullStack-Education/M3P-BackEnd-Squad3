@@ -6,14 +6,12 @@ import jakarta.validation.constraints.NotNull;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Schema(description = "Objeto de criação do docente")
 public record DocenteCreateRequest(
         @NotBlank(message = "O nome do Docente é obrigatório")
         String nome,
-
-        @NotNull(message = "o parametro data_entrada é obrigatório no formato dd/MM/yyyy")
-        LocalDate data_entrada,
 
         @NotNull(message = "O telefone do Docente é obrigatório")
         String telefone,
@@ -56,6 +54,14 @@ public record DocenteCreateRequest(
 
         String complemento,
 
-        @NotNull(message = "O ID do Usuario é obrigatório")
-        Long id_usuario
+        Long id_usuario,
+
+        @NotNull(message = "Atributo senha é obrigatório")
+        String senha,
+
+        @NotNull(message = "Atributo id_papel é obrigatório")
+        Long id_papel,
+
+        @NotNull(message = "Atributo id_materias é obrigatório")
+        List<Long> id_materias
 ) {}

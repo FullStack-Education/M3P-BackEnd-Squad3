@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.AssertTrue;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Objects;
 @Schema(description = "Objeto de edição do docente")
 public record DocenteUpdateRequest(
@@ -24,7 +25,8 @@ public record DocenteUpdateRequest(
         String cidade,
         String estado,
         String complemento,
-        Long id_usuario
+        Long id_usuario,
+        List<Long> id_materias
 ) {
     @AssertTrue(message = "Ao menos uma das propriedades não deve ser null")
     public boolean isValidRequest() {

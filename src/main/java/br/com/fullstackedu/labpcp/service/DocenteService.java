@@ -107,12 +107,34 @@ public class DocenteService {
                 log.error(errMessage);
                 return new NovoDocenteResponse(false, LocalDateTime.now() , errMessage , null, HttpStatus.NOT_FOUND);
             }
-            DocenteEntity newDocenteEntity = docenteRepository.save(
-                    new DocenteEntity(
-                            docenteCreateRequest.nome(),
-                            docenteCreateRequest.data_entrada(),
-                            targetUsuario)
-                    );
+
+            DocenteEntity newDocente = new DocenteEntity();
+            newDocente.setUsuario(targetUsuario);
+            newDocente.setNome(docenteCreateRequest.nome());
+            newDocente.setTelefone(docenteCreateRequest.telefone());
+            newDocente.setGenero(docenteCreateRequest.genero());
+            newDocente.setEstadoCivil(docenteCreateRequest.estadoCivil());
+            newDocente.setDataNascimento(docenteCreateRequest.dataNascimento());
+            newDocente.setEmail(docenteCreateRequest.email());
+            newDocente.setCPF(docenteCreateRequest.CPF());
+            newDocente.setRG(docenteCreateRequest.RG());
+            newDocente.setNaturalidade(docenteCreateRequest.naturalidade());
+            newDocente.setCep(docenteCreateRequest.cep());
+            newDocente.setLogradouro(docenteCreateRequest.logradouro());
+            newDocente.setNumero(docenteCreateRequest.numero());
+            newDocente.setCidade(docenteCreateRequest.cidade());
+            newDocente.setEstado(docenteCreateRequest.estado());
+            for (Long materia: docenteCreateRequest.id_materias()){
+                MateriaEntity targetmateria = materiaRepository.findById(materia).orElse(null);   //getReferenceById();
+                if (Objects.isNull(targetmateria)){
+                    String errMessage = "Erro ao cadastrar docente: Nenhuma materia com id ["+ targetmateria +"] encontrado";
+                    log.error(errMessage);
+                    return new NovoDocenteResponse(false, LocalDateTime.now() , errMessage , null, HttpStatus.NOT_FOUND);
+                }
+                newDocente.addMateria(targetmateria);
+            }
+            newDocente.setComplemento(docenteCreateRequest.complemento());
+            DocenteEntity newDocenteEntity = docenteRepository.save(newDocente);
             log.info("Docente adicionado com sucesso: {}", newDocenteEntity);
             return new NovoDocenteResponse(true, LocalDateTime.now(),"Docente cadastrado com sucesso.", Collections.singletonList(newDocenteEntity), HttpStatus.CREATED);
         } catch (Exception e) {
@@ -190,9 +212,31 @@ public class DocenteService {
             else return new NovoDocenteResponse(false, LocalDateTime.now() , "Falha ao associar Usuário ID "+ docenteUpdateRequest.id_usuario() +" ao Docente ID ["+ docenteId+"]: Usuário não existe" , null, HttpStatus.NOT_FOUND);
         }
 
-        if (docenteUpdateRequest.nome() != null) targetDocenteEntity.setNome(docenteUpdateRequest.nome());
+        targetDocenteEntity.limparMaterias();
+        for (Long materia: docenteUpdateRequest.id_materias()){
+            MateriaEntity targetmateria = materiaRepository.findById(materia).orElse(null);   //getReferenceById();
+            if (Objects.isNull(targetmateria)){
+                String errMessage = "Erro ao atualizar docente: Nenhuma materia com id ["+ targetmateria +"] encontrado";
+                log.error(errMessage);
+                return new NovoDocenteResponse(false, LocalDateTime.now() , errMessage , null, HttpStatus.NOT_FOUND);
+            }
+            targetDocenteEntity.addMateria(targetmateria);
+        }
 
-        if (docenteUpdateRequest.data_entrada() != null) targetDocenteEntity.setDataEntrada(docenteUpdateRequest.data_entrada());
+        if (docenteUpdateRequest.nome() != null) targetDocenteEntity.setNome(docenteUpdateRequest.nome());
+        if (docenteUpdateRequest.telefone() != null) targetDocenteEntity.setTelefone(docenteUpdateRequest.telefone());
+        if (docenteUpdateRequest.genero() != null) targetDocenteEntity.setGenero(docenteUpdateRequest.genero());
+        if (docenteUpdateRequest.estadoCivil() != null) targetDocenteEntity.setEstadoCivil(docenteUpdateRequest.estadoCivil());
+        if (docenteUpdateRequest.dataNascimento() != null) targetDocenteEntity.setDataNascimento(docenteUpdateRequest.dataNascimento());
+        if (docenteUpdateRequest.email() != null) targetDocenteEntity.setEmail(docenteUpdateRequest.email());
+        if (docenteUpdateRequest.CPF() != null) targetDocenteEntity.setCPF(docenteUpdateRequest.CPF());
+        if (docenteUpdateRequest.RG() != null) targetDocenteEntity.setRG(docenteUpdateRequest.RG());
+        if (docenteUpdateRequest.naturalidade() != null) targetDocenteEntity.setNaturalidade(docenteUpdateRequest.naturalidade());
+        if (docenteUpdateRequest.cep() != null) targetDocenteEntity.setCep(docenteUpdateRequest.cep());
+        if (docenteUpdateRequest.logradouro() != null) targetDocenteEntity.setLogradouro(docenteUpdateRequest.logradouro());
+        if (docenteUpdateRequest.numero() != null) targetDocenteEntity.setNumero(docenteUpdateRequest.numero());
+        if (docenteUpdateRequest.cidade() != null) targetDocenteEntity.setCidade(docenteUpdateRequest.cidade());
+        if (docenteUpdateRequest.complemento() != null) targetDocenteEntity.setComplemento(docenteUpdateRequest.complemento());
 
         DocenteEntity savedDocenteEntity = docenteRepository.save(targetDocenteEntity);
         return new NovoDocenteResponse(true, LocalDateTime.now(), "Docente atualizado", Collections.singletonList(savedDocenteEntity) , HttpStatus.OK);

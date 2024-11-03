@@ -7,6 +7,7 @@ import lombok.Data;
 
 import java.time.LocalDate;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Data
@@ -20,7 +21,7 @@ public class DocenteEntity {
         @Column(nullable = false)
         private String nome;
 
-        @Column(name = "data_entrada")
+        @Column(name = "data_entrada",nullable = true)
         private LocalDate dataEntrada;
 
 
@@ -82,12 +83,10 @@ public class DocenteEntity {
         @ManyToOne
         @JoinColumn(name = "id_usuario")
         @NotNull(message = "É necessário um Usuário Valido para cadastrar um Docente")
-        @JsonBackReference
         private UsuarioEntity usuario;
 
-        public DocenteEntity(String nome, LocalDate dataEntrada, UsuarioEntity usuario) {
+        public DocenteEntity(String nome,  UsuarioEntity usuario) {
                 this.nome = nome;
-                this.dataEntrada = dataEntrada;
                 this.usuario = usuario;
         }
 
@@ -95,15 +94,23 @@ public class DocenteEntity {
 
         }
 
-        @ManyToMany
+        @ManyToMany(cascade = CascadeType.REMOVE)
         @JoinTable(
                 name = "docente_materias",
                 joinColumns = @JoinColumn(name = "docente_id"),
                 inverseJoinColumns = @JoinColumn(name = "materia_id")
         )
-        @JsonBackReference
-        private Set<MateriaEntity> materias;
 
+        private Set<MateriaEntity> materias = new HashSet<>();;
+
+        @OneToMany(mappedBy = "professor", fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
+        @JsonBackReference
+        private List<NotaEntity> notas;
+
+
+        @OneToMany(mappedBy = "professor", fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
+        @JsonBackReference
+        private List<TurmaEntity> turmas;
 
         public void addMateria(MateriaEntity materia) {
                 this.materias.add(materia);
@@ -111,5 +118,9 @@ public class DocenteEntity {
 
         public void removeMateria(MateriaEntity materia) {
                 this.materias.remove(materia);
+        }
+
+        public void limparMaterias() {
+                materias.clear();
         }
 }

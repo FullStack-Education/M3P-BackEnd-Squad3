@@ -3,7 +3,9 @@ package br.com.fullstackedu.labpcp.service;
 import br.com.fullstackedu.labpcp.controller.dto.request.MateriaRequest;
 import br.com.fullstackedu.labpcp.controller.dto.request.MateriaUpdateRequest;
 import br.com.fullstackedu.labpcp.controller.dto.response.MateriaResponse;
+import br.com.fullstackedu.labpcp.controller.dto.response.NovoDocenteResponse;
 import br.com.fullstackedu.labpcp.database.entity.CursoEntity;
+import br.com.fullstackedu.labpcp.database.entity.DocenteEntity;
 import br.com.fullstackedu.labpcp.database.entity.MateriaEntity;
 import br.com.fullstackedu.labpcp.database.repository.CursoRepository;
 import br.com.fullstackedu.labpcp.database.repository.MateriaRepository;
@@ -165,4 +167,25 @@ public class MateriaService {
         return new MateriaResponse(true, LocalDateTime.now(), "Materia atualizada", Collections.singletonList(savedMateriaEntity) , HttpStatus.OK);
 
     }
+
+    public MateriaResponse getAllMaterias(String actualToken) {
+        try {
+            if (!_isAuthorized(actualToken)){
+                String errMessage = "Usuário logado não tem acesso a essa funcionalidade";
+                log.error(errMessage);
+                return new MateriaResponse(false, LocalDateTime.now() , errMessage , null, HttpStatus.UNAUTHORIZED);
+            }
+            List<MateriaEntity> listMaterias =  materiaRepository.findAll();
+
+            if (listMaterias.isEmpty()){
+                return new MateriaResponse(false, LocalDateTime.now() , "Não há materias cadastrados." , null, HttpStatus.NOT_FOUND);
+            } else
+                return new MateriaResponse(true, LocalDateTime.now(), "Materias encontrados: " + listMaterias.size() , listMaterias, HttpStatus.OK);
+
+        } catch (Exception e) {
+            log.error("Falha ao buscar materioas cadastrados. Erro: {}", e.getMessage());
+            return new MateriaResponse(false, LocalDateTime.now(), e.getMessage(), null, HttpStatus.BAD_REQUEST);
+        }
+    }
+
 }
