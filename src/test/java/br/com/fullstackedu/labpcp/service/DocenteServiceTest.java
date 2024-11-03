@@ -19,10 +19,7 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.http.HttpStatus;
 
 import java.time.LocalDate;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Optional;
+import java.util.*;
 
 public class DocenteServiceTest {
 
@@ -248,7 +245,7 @@ public class DocenteServiceTest {
         UsuarioEntity usuario = new UsuarioEntity();
         when(loginService.getFieldInToken(token, "scope")).thenReturn("ADM");
         when(usuarioRepository.findById(request.id_usuario())).thenReturn(Optional.of(usuario));
-        DocenteEntity docente = new DocenteEntity(request.nome(), request.data_entrada(), usuario);
+        DocenteEntity docente = new DocenteEntity(request.nome(),  usuario);
         when(docenteRepository.save(any(DocenteEntity.class))).thenReturn(docente);
 
         NovoDocenteResponse response = docenteService.novoDocente(request, token);
@@ -300,7 +297,8 @@ public class DocenteServiceTest {
         String token = "validToken";
         String someString = "some string";
         when(loginService.getFieldInToken(token, "scope")).thenReturn("ADM");
-        DocenteUpdateRequest request = new DocenteUpdateRequest("Updated Name", LocalDate.now(), "51999999999", someString, someString, LocalDate.now(), someString, someString, someString, someString, someString, someString, someString, someString, someString, someString, 1L);
+        List<Long> idMaterias = new ArrayList<>();
+        DocenteUpdateRequest request = new DocenteUpdateRequest("Updated Name", LocalDate.now(), "51999999999", someString, someString, LocalDate.now(), someString, someString, someString, someString, someString, someString, someString, someString, someString, someString, 1L, idMaterias);
         DocenteEntity docente = new DocenteEntity();
         UsuarioEntity usuario = new UsuarioEntity();
         when(docenteRepository.findById(1L)).thenReturn(Optional.of(docente));
@@ -318,7 +316,8 @@ public class DocenteServiceTest {
         String token = "validToken";
         String someString = "some string";
         when(loginService.getFieldInToken(token, "scope")).thenReturn("ADM");
-        DocenteUpdateRequest request = new DocenteUpdateRequest("Updated Name", LocalDate.now(), "51999999999", someString, someString, LocalDate.now(), someString, someString, someString, someString, someString, someString, someString, someString, someString, someString, 1L);
+        List<Long> idMaterias = new ArrayList<>();
+        DocenteUpdateRequest request = new DocenteUpdateRequest("Updated Name", LocalDate.now(), "51999999999", someString, someString, LocalDate.now(), someString, someString, someString, someString, someString, someString, someString, someString, someString, someString, 1L, idMaterias );
         when(docenteRepository.findById(1L)).thenReturn(Optional.empty());
 
         NovoDocenteResponse response = docenteService.updateDocente(1L, request, token);
@@ -332,7 +331,8 @@ public class DocenteServiceTest {
         String token = "invalidToken";
         String someString = "some string";
         when(loginService.getFieldInToken(token, "scope")).thenReturn("ALUNO");
-        DocenteUpdateRequest request = new DocenteUpdateRequest("Updated Name", LocalDate.now(), "51999999999", someString, someString, LocalDate.now(), someString, someString, someString, someString, someString, someString, someString, someString, someString, someString, 1L);
+        List<Long> idMaterias = new ArrayList<>();
+        DocenteUpdateRequest request = new DocenteUpdateRequest("Updated Name", LocalDate.now(), "51999999999", someString, someString, LocalDate.now(), someString, someString, someString, someString, someString, someString, someString, someString, someString, someString, 1L, idMaterias);
 
         NovoDocenteResponse response = docenteService.updateDocente(1L, request, token);
 
@@ -345,7 +345,8 @@ public class DocenteServiceTest {
         String token = "validToken";
         String someString = "some string";
         when(loginService.getFieldInToken(token, "scope")).thenReturn("ADM");
-        DocenteUpdateRequest request = new DocenteUpdateRequest("Updated Name", LocalDate.now(), "51999999999", someString, someString, LocalDate.now(), someString, someString, someString, someString, someString, someString, someString, someString, someString, someString, 1L);
+        List<Long> idMaterias = new ArrayList<>();
+        DocenteUpdateRequest request = new DocenteUpdateRequest("Updated Name", LocalDate.now(), "51999999999", someString, someString, LocalDate.now(), someString, someString, someString, someString, someString, someString, someString, someString, someString, someString, 1L, idMaterias);
         DocenteEntity docente = new DocenteEntity();
         when(docenteRepository.findById(1L)).thenReturn(Optional.of(docente));
         when(usuarioRepository.findById(1L)).thenReturn(Optional.empty());
@@ -361,7 +362,8 @@ public class DocenteServiceTest {
         String token = "validToken";
         String someString = "some string";
         when(loginService.getFieldInToken(token, "scope")).thenReturn("ADM");
-        DocenteUpdateRequest request = new DocenteUpdateRequest("Updated Name", LocalDate.now(), "51999999999", someString, someString, LocalDate.now(), someString, someString, someString, someString, someString, someString, someString, someString, someString, someString, 1L);
+        List<Long> idMaterias = new ArrayList<>();
+        DocenteUpdateRequest request = new DocenteUpdateRequest("Updated Name", LocalDate.now(), "51999999999", someString, someString, LocalDate.now(), someString, someString, someString, someString, someString, someString, someString, someString, someString, someString, 1L, idMaterias);
         when(docenteRepository.findById(1L)).thenThrow(new RuntimeException("Database error"));
 
         NovoDocenteResponse response = docenteService.updateDocente(1L, request, token);
