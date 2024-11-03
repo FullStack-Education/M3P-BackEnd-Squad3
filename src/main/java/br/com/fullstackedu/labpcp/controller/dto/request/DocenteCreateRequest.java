@@ -12,7 +12,6 @@ import java.util.List;
 public record DocenteCreateRequest(
         @NotBlank(message = "O nome do Docente é obrigatório")
         String nome,
-
         @NotNull(message = "O telefone do Docente é obrigatório")
         String telefone,
 
@@ -52,8 +51,10 @@ public record DocenteCreateRequest(
         @NotNull(message = "O estado é obrigatório")
         String estado,
 
+        @NotNull(message = "O complemento é obrigatória")
         String complemento,
 
+        @NotNull(message = "Atributo id_usuário é obrigatório")
         Long id_usuario,
 
         @NotNull(message = "Atributo senha é obrigatório")

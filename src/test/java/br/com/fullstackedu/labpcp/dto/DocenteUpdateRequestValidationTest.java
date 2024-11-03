@@ -11,6 +11,7 @@ import jakarta.validation.Validation;
 import jakarta.validation.Validator;
 import jakarta.validation.ValidatorFactory;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Set;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -29,19 +30,19 @@ public class DocenteUpdateRequestValidationTest {
     private DocenteUpdateRequest createDocenteUpdateRequest(
             String nome, LocalDate dataEntrada, String telefone, String genero, String estadoCivil,
             LocalDate dataNascimento, String email, String CPF, String RG, String naturalidade,
-            String cep, String logradouro, String numero, String cidade, String estado, String complemento, Long idUsuario
+            String cep, String logradouro, String numero, String cidade, String estado, String complemento, Long idUsuario, List<Long> idMaterias
     ) {
         return new DocenteUpdateRequest(
                 nome, dataEntrada, telefone, genero, estadoCivil, dataNascimento, email, CPF, RG,
-                naturalidade, cep, logradouro, numero, cidade, estado, complemento, idUsuario
+                naturalidade, cep, logradouro, numero, cidade, estado, complemento, idUsuario, idMaterias
         );
     }
 
     @ParameterizedTest
     @CsvSource({
-            "null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null",  // All null - invalid
-            "'João Silva', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null",  // nome only - valid
-            "null, 2020-01-01, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null"    // dataEntrada only - valid
+            "null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null",  // All null - invalid
+            "'João Silva', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null",  // nome only - valid
+            "null, 2020-01-01, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null"    // dataEntrada only - valid
     })
     void testAtLeastOneFieldNotNullValidation(ArgumentsAccessor args) {
         String nome = !"null".equals(args.getString(0)) ? args.getString(0) : null;
@@ -61,10 +62,11 @@ public class DocenteUpdateRequestValidationTest {
         String estado = !"null".equals(args.getString(14)) ? args.getString(14) : null;
         String complemento = !"null".equals(args.getString(15)) ? args.getString(15) : null;
         Long idUsuario = !"null".equals(args.getString(16)) ? args.getLong(16) : null;
+        List<Long> idMaterias = !"null".equals(args.getString(17)) ? List.of(1L, 2L, 3L) : null;
 
         DocenteUpdateRequest request = createDocenteUpdateRequest(
                 nome, dataEntrada, telefone, genero, estadoCivil, dataNascimento, email, CPF, RG,
-                naturalidade, cep, logradouro, numero, cidade, estado, complemento, idUsuario
+                naturalidade, cep, logradouro, numero, cidade, estado, complemento, idUsuario, idMaterias
         );
 
         Set<ConstraintViolation<DocenteUpdateRequest>> violations = validator.validate(request);
