@@ -1,7 +1,18 @@
 package br.com.fullstackedu.labpcp.service;
 
+import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
+
 import br.com.fullstackedu.labpcp.controller.dto.request.DocenteCreateRequest;
 import br.com.fullstackedu.labpcp.controller.dto.request.DocenteUpdateRequest;
+import br.com.fullstackedu.labpcp.controller.dto.request.UsuarioCreateRequest;
 import br.com.fullstackedu.labpcp.controller.dto.response.NovoDocenteResponse;
 import br.com.fullstackedu.labpcp.database.entity.DocenteEntity;
 import br.com.fullstackedu.labpcp.database.entity.MateriaEntity;
@@ -10,11 +21,6 @@ import br.com.fullstackedu.labpcp.database.repository.DocenteRepository;
 import br.com.fullstackedu.labpcp.database.repository.MateriaRepository;
 import br.com.fullstackedu.labpcp.database.repository.UsuarioRepository;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Service;
-
-import java.time.LocalDateTime;
-import java.util.*;
 
 @Service
 @Slf4j
@@ -23,12 +29,20 @@ public class DocenteService {
     private final UsuarioRepository usuarioRepository;
     private final LoginService loginService;
     private final MateriaRepository materiaRepository;
+    private final UsuarioService usuarioService;
 
-    public DocenteService(DocenteRepository docenteRepository, UsuarioRepository usuarioRepository, LoginService loginService, MateriaRepository materiaRepository) {
+    public DocenteService(
+        DocenteRepository docenteRepository,
+        UsuarioRepository usuarioRepository, 
+        LoginService loginService, 
+        MateriaRepository materiaRepository, 
+        UsuarioService usuarioService
+        ) {
         this.docenteRepository = docenteRepository;
         this.usuarioRepository = usuarioRepository;
         this.loginService = loginService;
         this.materiaRepository = materiaRepository;
+        this.usuarioService = usuarioService;
     }
 
     public NovoDocenteResponse addMateriaDocente(Long materiaId, Long docenteId, String authToken) {
@@ -101,13 +115,22 @@ public class DocenteService {
                 log.error(errMessage);
                 return new NovoDocenteResponse(false, LocalDateTime.now() , errMessage , null, HttpStatus.UNAUTHORIZED);
             }
-            UsuarioEntity targetUsuario = usuarioRepository.findById(docenteCreateRequest.id_usuario()).orElse(null);   //getReferenceById();
-            if (Objects.isNull(targetUsuario)){
-                String errMessage = "Erro ao cadastrar docente: Nenhum usuário com id ["+ docenteCreateRequest.id_usuario() +"] encontrado";
-                log.error(errMessage);
-                return new NovoDocenteResponse(false, LocalDateTime.now() , errMessage , null, HttpStatus.NOT_FOUND);
+            UsuarioEntity targetUsuario;
+            if (Objects.isNull(docenteCreateRequest.id_usuario())){
+                UsuarioCreateRequest usuarioCreateRequest = new UsuarioCreateRequest(
+                    docenteCreateRequest.nome(), 
+                    docenteCreateRequest.email(), 
+                    docenteCreateRequest.email(), 
+                    docenteCreateRequest.id_papel());
+                targetUsuario = usuarioService.novoUsuario(usuarioCreateRequest, authToken).usuarioEntity();
+            } else {
+                targetUsuario = usuarioRepository.findById(docenteCreateRequest.id_usuario()).orElse(null);   //getReferenceById();
+                if (Objects.isNull(targetUsuario)){
+                    String errMessage = "Erro ao cadastrar docente: Nenhum usuário com id ["+ docenteCreateRequest.id_usuario() +"] encontrado";
+                    log.error(errMessage);
+                    return new NovoDocenteResponse(false, LocalDateTime.now() , errMessage , null, HttpStatus.NOT_FOUND);
+                }
             }
-
             DocenteEntity newDocente = new DocenteEntity();
             newDocente.setUsuario(targetUsuario);
             newDocente.setNome(docenteCreateRequest.nome());
