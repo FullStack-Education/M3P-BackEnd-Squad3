@@ -2,12 +2,9 @@ package br.com.fullstackedu.labpcp.controller;
 
 import br.com.fullstackedu.labpcp.controller.dto.request.DocenteCreateRequest;
 import br.com.fullstackedu.labpcp.controller.dto.request.DocenteUpdateRequest;
-import br.com.fullstackedu.labpcp.controller.dto.response.AlunoResponse;
 import br.com.fullstackedu.labpcp.controller.dto.response.NovoDocenteResponse;
 import br.com.fullstackedu.labpcp.controller.dto.response.NovoUsuarioResponse;
-import br.com.fullstackedu.labpcp.database.entity.UsuarioEntity;
 import br.com.fullstackedu.labpcp.service.DocenteService;
-import br.com.fullstackedu.labpcp.service.PapelService;
 import br.com.fullstackedu.labpcp.service.UsuarioService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -33,12 +30,10 @@ import java.time.LocalDateTime;
 public class DocenteController {
     private final DocenteService docenteService;
     private final UsuarioService usuarioService;
-    private final PapelService papelService;
 
-    public DocenteController(DocenteService docenteService, UsuarioService usuarioService, PapelService papelService) {
+    public DocenteController(DocenteService docenteService, UsuarioService usuarioService) {
         this.docenteService = docenteService;
         this.usuarioService = usuarioService;
-        this.papelService = papelService;
     }
 
     @Operation(summary = "Cadastrar novo docente")
@@ -58,15 +53,7 @@ public class DocenteController {
     ) throws Exception {
         log.info("POST /docentes -> Novo Docente ");
         String actualToken = authToken.substring(7);
-        UsuarioEntity newUser = new UsuarioEntity();
-        newUser.setNome(docenteCreateRequest.nome());
-        newUser.setLogin(docenteCreateRequest.email());
-        newUser.setSenha(docenteCreateRequest.senha());
-        newUser.setPapel(
-                papelService.getPapelById(docenteCreateRequest.id_papel())
-        );
-
-        NovoUsuarioResponse novo = usuarioService.novoUsuario(newUser, actualToken);
+                NovoUsuarioResponse novo = usuarioService.novoUsuario(docenteCreateRequest, actualToken);
         if (!novo.success()) {
             String errMessage = "Erro ao cadastrar docentes: dados ja cadastrados";
             log.error(errMessage);

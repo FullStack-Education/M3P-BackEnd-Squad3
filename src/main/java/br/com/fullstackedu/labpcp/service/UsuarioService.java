@@ -1,5 +1,7 @@
 package br.com.fullstackedu.labpcp.service;
 
+import br.com.fullstackedu.labpcp.controller.dto.request.AlunoRequest;
+import br.com.fullstackedu.labpcp.controller.dto.request.DocenteCreateRequest;
 import br.com.fullstackedu.labpcp.controller.dto.request.UsuarioCreateRequest;
 import br.com.fullstackedu.labpcp.controller.dto.response.NovoUsuarioResponse;
 import br.com.fullstackedu.labpcp.database.entity.UsuarioEntity;
@@ -28,7 +30,7 @@ public class UsuarioService {
         this.papelService = papelService;
     }
 
-    public NovoUsuarioResponse novoUsuario(UsuarioCreateRequest nuRequest, String authToken) throws Exception{
+    private NovoUsuarioResponse _novoUsuario(UsuarioCreateRequest nuRequest, String authToken) throws Exception{
         try {
             String papelName =  loginService.getFieldInToken(authToken, "scope");
             if (!Objects.equals(papelName, "ADM")){
@@ -51,5 +53,30 @@ public class UsuarioService {
             log.info("Falha ao adicionar usuario. Erro: {}", e.getMessage());
             return new NovoUsuarioResponse(false, LocalDateTime.now() , e.getMessage() , null, HttpStatus.BAD_REQUEST );
         }
+    }
+
+
+    public NovoUsuarioResponse novoUsuario(UsuarioCreateRequest newUserRequest, String authToken) throws Exception {
+        return this._novoUsuario(newUserRequest, authToken);
+    }
+
+    public NovoUsuarioResponse novoUsuario(AlunoRequest alunoRequest, String actualToken) throws Exception {
+        UsuarioCreateRequest usuarioCreateRequest = new UsuarioCreateRequest(
+            alunoRequest.nome(),
+            alunoRequest.email(),
+            alunoRequest.senha(),
+            alunoRequest.id_papel()
+        );
+        return this._novoUsuario(usuarioCreateRequest, actualToken);
+    }
+
+    public NovoUsuarioResponse novoUsuario(DocenteCreateRequest docenteCreateRequest, String actualToken)  throws Exception {
+        UsuarioCreateRequest usuarioCreateRequest = new UsuarioCreateRequest(
+                docenteCreateRequest.nome(),
+                docenteCreateRequest.email(),
+                docenteCreateRequest.senha(),
+                docenteCreateRequest.id_papel()
+        );
+        return this._novoUsuario(usuarioCreateRequest, actualToken);
     }
 }
