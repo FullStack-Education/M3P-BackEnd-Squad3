@@ -85,7 +85,7 @@ public class TurmaService {
     public TurmaCreateResponse getTurmaById(Long turmaId, String actualToken) {
         try {
             String papelName =  loginService.getFieldInToken(actualToken, "scope");
-            List<String> authorizedPapeis =  Arrays.asList("ADM", "PEDAGOGICO");
+            List<String> authorizedPapeis =  Arrays.asList("ADM", "PEDAGOGICO","PROFESSOR");
             if (!authorizedPapeis.contains(papelName)){
                 String errMessage = "Usuários com papel [" + papelName + "] não tem acesso a essa funcionalidade";
                 log.error(errMessage);
@@ -181,7 +181,7 @@ public class TurmaService {
     public TurmaCreateResponse getAllTurmas(String actualToken) {
         try {
             String papelName = loginService.getFieldInToken(actualToken, "scope");
-            List<String> authorizedPapeis = Arrays.asList("ADM", "PEDAGOGICO");
+            List<String> authorizedPapeis = Arrays.asList("ADM", "PEDAGOGICO","PROFESSOR");
             if (!authorizedPapeis.contains(papelName)) {
                 String errMessage = "Usuários com papel [" + papelName + "] não tem acesso a essa funcionalidade";
                 log.error(errMessage);

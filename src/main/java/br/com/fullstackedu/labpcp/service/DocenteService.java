@@ -33,7 +33,7 @@ public class DocenteService {
 
     public NovoDocenteResponse addMateriaDocente(Long materiaId, Long docenteId, String authToken) {
         String papelName =  loginService.getFieldInToken(authToken, "scope");
-        List<String> authorizedPapeis =  Arrays.asList("ADM", "PEDAGOGICO", "RECRUITER");
+        List<String> authorizedPapeis =  Arrays.asList("ADM", "PEDAGOGICO", "RECRUITER","PROFESSOR");
         if (!authorizedPapeis.contains(papelName)){
             String errMessage = "Usuários com papel [" + papelName + "] não tem acesso a essa funcionalidade";
             log.error(errMessage);
@@ -147,7 +147,7 @@ public class DocenteService {
     public NovoDocenteResponse getDocenteById(Long docenteId, String authToken) {
         try {
             String papelName =  loginService.getFieldInToken(authToken, "scope");
-            List<String> authorizedPapeis =  Arrays.asList("ADM", "PEDAGOGICO", "RECRUITER");
+            List<String> authorizedPapeis =  Arrays.asList("ADM", "PEDAGOGICO", "RECRUITER","PROFESSOR");
             if (!authorizedPapeis.contains(papelName)){
                 String errMessage = "Usuários com papel [" + papelName + "] não tem acesso a essa funcionalidade";
                 log.error(errMessage);
