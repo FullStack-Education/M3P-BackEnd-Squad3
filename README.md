@@ -43,6 +43,7 @@ Para baixar o projeto do Git e executá-lo localmente, siga os passos abaixo:
 4. Execute a aplicação usando Maven (certifique-se de ter o Maven instalado):
     ```bash
     mvn spring-boot:run
+5. *(Opcional)* Rodar a [aplicação Front-End](https://github.com/FullStack-Education/M3P-FrontEnd-Squad3) para visualizar o projeto. *[Veja mais](https://github.com/FullStack-Education/M3P-FrontEnd-Squad3)*
 ## Dados Predefinidos
 
 - ADMIN
