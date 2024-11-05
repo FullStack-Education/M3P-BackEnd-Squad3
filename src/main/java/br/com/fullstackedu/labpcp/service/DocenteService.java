@@ -158,7 +158,7 @@ public class DocenteService {
             }
             newDocente.setComplemento(docenteCreateRequest.complemento());
             DocenteEntity newDocenteEntity = docenteRepository.save(newDocente);
-            log.info("Docente adicionado com sucesso: {}", newDocenteEntity);
+            log.info("Docente adicionado com sucesso: {}", newDocenteEntity.getId() + " - " + newDocenteEntity.getNome());
             return new NovoDocenteResponse(true, LocalDateTime.now(),"Docente cadastrado com sucesso.", Collections.singletonList(newDocenteEntity), HttpStatus.CREATED);
         } catch (Exception e) {
             log.error("Falha ao adicionar Docente. Erro: {}", e.getMessage());
