@@ -1,14 +1,17 @@
-# Lab PCP Manager
+# Lab PCP - Gestão Educacional (Back-End)
 
 ## Descrição
-O Lab PCP Manager(labPcpMng) é uma JAVA Rest API para gerenciar uma instituição educacional, como uma escola ou laboratório de informática.
+O **Lab PCP - Gestão Educacional (Back-End)** é uma JAVA Rest API para gerenciar uma instituição educacional, como uma escola ou laboratório de informática.
+Quando integrada à [parte Front-End](https://github.com/FullStack-Education/M3P-FrontEnd-Squad3), forma um projeto Fullstack de Gestão Educacional.
 
 ## Problema que Resolve
-Buscando facilitar o dia a dia da rotinas administrativas, o labPcpMng permite:  
+Buscando facilitar o dia a dia da rotinas administrativas, o Lab PCP permite:  
 
-- Gerenciar corpo docente: professores, recrutadores, corpo pedagógico 
-- Gerenciar cursos e suas disciplinas
-- Gerenciar alunos, suas matriculas, notas e pontuação geral
+- Gerenciar corpo docente: professores, recrutadores, corpo pedagógico; 
+- Gerenciar cursos e suas disciplinas;
+- Gerenciar alunos, suas matriculas, notas e pontuação geral. 
+
+O Lab PCP gerencia e manipula dados integrando-os ao seu Banco de Dados.
 
 ## Tecnologias Utilizadas
 - Java Spring Boot ([Link Spring initializr](https://start.spring.io/#!type=maven-project&language=java&platformVersion=3.2.5&packaging=jar&jvmVersion=17&groupId=br.com.fullstackedu&artifactId=labpcp&name=labpcp&description=Demo%20project%20for%20Spring%20Boot&packageName=br.com.fullstackedu.labpcp&dependencies=data-jpa,oauth2-resource-server,security,web,lombok,devtools,postgresql,validation))
@@ -17,18 +20,50 @@ Buscando facilitar o dia a dia da rotinas administrativas, o labPcpMng permite:
 - Trello (para gerenciamento de projeto)
 - Kanban (metodologia ágil de gestão de projetos)
 
+## Pré-requisitos
+
+- **[Git](https://git-scm.com/downloads)** para clonar o repositório
+- **[Docker](https://www.docker.com/)** para rodar o projeto em imagens
+- **[JDK 21](https://www.oracle.com/br/java/technologies/downloads/#java21)** para rodar o código Java
+- **[PostgreSQL](https://www.postgresql.org/download/)** para o banco de dados 
+- **[APACHE Maven](https://maven.apache.org/download.cgi)** para compilação do projeto
+
 ## Como Baixar e Executar
 Para baixar o projeto do Git e executá-lo localmente, siga os passos abaixo:
 
 1. Clone o repositório do Git:
    ```bash
-   git clone https://github.com/seu-usuario/lab-pcp-manager.git
+   git clone https://github.com/FullStack-Education/M3P-BackEnd-Squad3.git lab-pcp
 2. Navegue até o diretório do projeto:   
     ```bash
-    cd lab-pcp-manager
-3. Execute a aplicação usando Maven (certifique-se de ter o Maven instalado):
+    cd lab-pcp
+3. Configure o banco de dados em docker e inicie-o.  
+   Utilize o usuário `postgres` e a senha `123456` para o banco de dados.
+
+4. Execute a aplicação usando Maven (certifique-se de ter o Maven instalado):
     ```bash
     mvn spring-boot:run
+## Dados Predefinidos
+
+- ADMIN
+  - Login: admin@mail.com
+  - Senha: admin@mail.com
+  
+- PEDAGOGICO
+  - Login: pedagogico@mail.com
+  - Senha: pedagogico@mail.com
+
+- RECRUITER (Recrutador)
+  - Login: recruiter@mail.com
+  - Senha: recruiter@mail.com
+
+- PROFESSOR
+  - Login: professor@mail.com
+  - Senha: professor@mail.com
+
+- ALUNO
+  - Login: aluno@mail.com
+  - Senha: aluno@mail.com
 
 ## Como Contribuir
 
