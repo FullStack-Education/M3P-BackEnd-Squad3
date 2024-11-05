@@ -190,7 +190,7 @@ public class DocenteService {
     public NovoDocenteResponse getAllDocentes(String authToken) {
         try {
             String papelName =  loginService.getFieldInToken(authToken, "scope");
-            List<String> authorizedPapeis =  Arrays.asList("ADM", "PEDAGOGICO", "RECRUITER");
+            List<String> authorizedPapeis =  Arrays.asList("ADM","PROFESSOR", "PEDAGOGICO", "RECRUITER");
             if (!authorizedPapeis.contains(papelName)){
                 String errMessage = "Usuários com papel [" + papelName + "] não tem acesso a essa funcionalidade";
                 log.error(errMessage);
