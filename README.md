@@ -99,6 +99,5 @@ Este projeto segue o modelo de branch GitFlow para gerenciamento de branches e v
 ## Possíveis Melhorias
 Algumas melhorias que podem ser implementadas no projeto incluem:
 
-- Implementação de testes automatizados para garantir a qualidade do código.
 - Implementação de classes genéricas para redução de código repetitivo
 - Novas funcionalidades para a administração de uma instituição educacional.
