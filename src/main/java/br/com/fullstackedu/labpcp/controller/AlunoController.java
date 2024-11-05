@@ -4,11 +4,8 @@ import br.com.fullstackedu.labpcp.controller.dto.request.AlunoRequest;
 
 import br.com.fullstackedu.labpcp.controller.dto.request.AlunoUpdateRequest;
 import br.com.fullstackedu.labpcp.controller.dto.response.*;
-
-import br.com.fullstackedu.labpcp.database.entity.UsuarioEntity;
 import br.com.fullstackedu.labpcp.service.AlunoService;
 import br.com.fullstackedu.labpcp.service.NotaService;
-import br.com.fullstackedu.labpcp.service.PapelService;
 import br.com.fullstackedu.labpcp.service.UsuarioService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -37,7 +34,6 @@ public class AlunoController {
     private final AlunoService alunoService;
     private final NotaService notaService;
     private final UsuarioService usuarioService;
-    private final PapelService papelService;
 
     @Operation(summary = "Cadastrar novo aluno")
     @ApiResponses(value = {
@@ -57,15 +53,7 @@ public class AlunoController {
         log.info("POST /alunos ");
 
         String actualToken = authToken.substring(7);
-        UsuarioEntity newUser = new UsuarioEntity();
-        newUser.setNome(alunoRequest.nome());
-        newUser.setLogin(alunoRequest.email());
-        newUser.setSenha(alunoRequest.senha());
-        newUser.setPapel(
-                papelService.getPapelById(alunoRequest.id_papel())
-        );
-
-        NovoUsuarioResponse novo = usuarioService.novoUsuario(newUser, actualToken);
+        NovoUsuarioResponse novo = usuarioService.novoUsuario(alunoRequest, actualToken);
         if(!novo.success()){
             String errMessage = "Erro ao cadastrar aluno: dados ja cadastrados";
             log.error(errMessage);
