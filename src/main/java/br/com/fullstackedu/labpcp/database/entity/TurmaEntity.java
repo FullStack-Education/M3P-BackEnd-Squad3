@@ -31,7 +31,7 @@ public class TurmaEntity {
     @Column(nullable = false)
     private String hora;
 
-    @OneToMany(mappedBy = "turma", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "turma", cascade = CascadeType.DETACH, fetch = FetchType.LAZY)
     @JsonManagedReference
     @JsonIgnore
     List<AlunoEntity> alunos;
