@@ -1,13 +1,18 @@
 # Lab PCP - Gestão Educacional (Back-End)
 
 ## Descrição
-O **Lab PCP - Gestão Educacional (Back-End)** é parte DE um sistema web de gestão educacional desenvolvido como parte do projeto avaliativo do módulo 3. 
-Este sistema proporciona funcionalidades essenciais para a administração de instituições educacionais, permitindo o cadastro de turmas, conteúdos, docentes e alunos, além de oferecer recursos para alocação de professores, gerenciamento de notas e controle de acesso dos usuários. 
-Desenvolvido utilizando Java, Spring, API REST, PostgreSQL e Docker, o Educação FullStack emprega tecnologias modernas e práticas de desenvolvimento, 
-incluindo Spring Security para controle de segurança, PostgreSQL para armazenamento de dados e GitHub para versionamento do código. 
-Além disso, a metodologia de desenvolvimento utiliza o Kanban no Trello para organização das tarefas, garantindo uma abordagem ágil e eficiente. 
-O sistema atende a uma variedade de papéis de usuários, como administradores, docentes e alunos, cada um com suas permissões específicas de acesso e funcionalidades disponíveis. 
+O **Lab PCP - Gestão Educacional (Back-End)** é parte de um sistema web de gestão educacional desenvolvido como parte do projeto avaliativo do módulo 3.
+
+Este sistema proporciona funcionalidades essenciais para a administração de instituições educacionais, permitindo o cadastro de turmas, conteúdos, docentes e alunos, além de oferecer recursos para alocação de professores, gerenciamento de notas e controle de acesso dos usuários.
+
+Desenvolvido utilizando Java, Spring, API REST, PostgreSQL e Docker, o Educação FullStack emprega tecnologias modernas e práticas de desenvolvimento, incluindo Spring Security para controle de segurança, PostgreSQL para armazenamento de dados e GitHub para versionamento do código.
+
+Além disso, a metodologia de desenvolvimento utiliza o Kanban no Trello para organização das tarefas, garantindo uma abordagem ágil e eficiente.
+
+O sistema atende a uma variedade de papéis de usuários, como administradores, docentes e alunos, cada um com suas permissões específicas de acesso e funcionalidades disponíveis.
+
 Com uma arquitetura sólida e uma implementação cuidadosa das regras de negócio, o **Lab PCP - Gestão Educacional (Back-End)** é uma solução completa para a gestão educacional, proporcionando uma experiência integrada e eficaz para todas as partes envolvidas no processo educativo.
+
 Quando integrada à [parte Front-End](https://github.com/FullStack-Education/M3P-FrontEnd-Squad3), forma um projeto Fullstack de Gestão Educacional.
 
 ---
