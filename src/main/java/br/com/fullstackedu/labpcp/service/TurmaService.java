@@ -37,7 +37,7 @@ public class TurmaService {
     public TurmaCreateResponse novaTurma(TurmaCreateRequest turmaCreateRequest, String authToken) throws Exception{
         try {
             String papelName =  loginService.getFieldInToken(authToken, "scope");
-            List<String> authorizedPapeis =  Arrays.asList("ADM", "PEDAGOGICO");
+            List<String> authorizedPapeis =  Arrays.asList("ADM", "PEDAGOGICO", "PROFESSOR");
             if (!authorizedPapeis.contains(papelName)){
                 String errMessage = "Usuários com papel [" + papelName + "] não tem acesso a essa funcionalidade";
                 log.error(errMessage);
@@ -74,6 +74,9 @@ public class TurmaService {
         }
         newTurma.setCurso(targetCurso);
         newTurma.setNome(turmaCreateRequest.nome());
+        newTurma.setDataFim(turmaCreateRequest.dataFim());
+        newTurma.setDataInicio(turmaCreateRequest.dataInicio());
+        newTurma.setHora(turmaCreateRequest.hora());
         TurmaEntity insertedTurma = turmaRepository.save(newTurma);
         log.info("Turma adicionada com sucesso: {}", newTurma.getId());
         return new TurmaCreateResponse(true, LocalDateTime.now(),"Turma adicionada com sucesso.", Collections.singletonList(newTurma), HttpStatus.CREATED);
@@ -82,7 +85,7 @@ public class TurmaService {
     public TurmaCreateResponse getTurmaById(Long turmaId, String actualToken) {
         try {
             String papelName =  loginService.getFieldInToken(actualToken, "scope");
-            List<String> authorizedPapeis =  Arrays.asList("ADM", "PEDAGOGICO");
+            List<String> authorizedPapeis =  Arrays.asList("ADM", "PEDAGOGICO","PROFESSOR");
             if (!authorizedPapeis.contains(papelName)){
                 String errMessage = "Usuários com papel [" + papelName + "] não tem acesso a essa funcionalidade";
                 log.error(errMessage);
@@ -138,6 +141,9 @@ public class TurmaService {
             }
         }
         if (turmaUpdateRequest.nome() != null) targetTurmaEntity.setNome(turmaUpdateRequest.nome());
+        if (turmaUpdateRequest.hora() != null) targetTurmaEntity.setHora(turmaUpdateRequest.hora());
+        if (turmaUpdateRequest.dataFim() != null) targetTurmaEntity.setDataFim(turmaUpdateRequest.dataFim());
+        if (turmaUpdateRequest.dataInicio() != null) targetTurmaEntity.setDataInicio(turmaUpdateRequest.dataInicio());
 
         TurmaEntity savedTurmaEntity = turmaRepository.save(targetTurmaEntity);
         return new TurmaCreateResponse(true, LocalDateTime.now(), "Turma atualizada", Collections.singletonList(savedTurmaEntity) , HttpStatus.OK);
@@ -175,7 +181,7 @@ public class TurmaService {
     public TurmaCreateResponse getAllTurmas(String actualToken) {
         try {
             String papelName = loginService.getFieldInToken(actualToken, "scope");
-            List<String> authorizedPapeis = Arrays.asList("ADM", "PEDAGOGICO");
+            List<String> authorizedPapeis = Arrays.asList("ADM", "PEDAGOGICO","PROFESSOR");
             if (!authorizedPapeis.contains(papelName)) {
                 String errMessage = "Usuários com papel [" + papelName + "] não tem acesso a essa funcionalidade";
                 log.error(errMessage);
@@ -191,5 +197,9 @@ public class TurmaService {
             return new TurmaCreateResponse(false, LocalDateTime.now() , e.getMessage() , null, HttpStatus.BAD_REQUEST );
         }
 
+    }
+
+    public long count() {
+        return turmaRepository.count();
     }
 }

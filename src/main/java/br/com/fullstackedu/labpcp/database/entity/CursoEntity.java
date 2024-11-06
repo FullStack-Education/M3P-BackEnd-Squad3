@@ -18,11 +18,11 @@ public class CursoEntity {
     @Column(nullable = false)
     private String nome;
 
-    @OneToMany(mappedBy = "curso", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "curso", cascade = CascadeType.REMOVE)
     @JsonBackReference
     private List<TurmaEntity> turmas;
 
-    @OneToMany(mappedBy = "curso", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "curso", cascade = CascadeType.REMOVE)
     @JsonManagedReference
     private List<MateriaEntity> materias;
 

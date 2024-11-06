@@ -21,7 +21,7 @@ public class CursoService {
     private final CursoRepository cursoRepository;
     private final LoginService loginService;
 
-    private static final List<String> commonPermissions = List.of("ADM", "PEDAGOGICO");
+    private static final List<String> commonPermissions = List.of("ADM", "PEDAGOGICO","PROFESSOR");
     private static final List<String> deletePermission = List.of("ADM");
 
     private boolean _isAuthorized(String actualToken, List<String> authorizedPerfis) {

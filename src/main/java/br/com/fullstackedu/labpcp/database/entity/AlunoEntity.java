@@ -6,6 +6,8 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 import java.time.LocalDate;
+import java.util.List;
+import java.util.Set;
 
 @Data
 @Entity
@@ -22,14 +24,58 @@ public class AlunoEntity {
     @NotNull(message = "É necessário um Data de nascimento válida para cadastrar um Aluno")
     private LocalDate dataNascimento;
 
+
+    @Column(nullable = false)
+    private String telefone;
+
+    @Column(nullable = false)
+    private String genero;
+
+    @Column(name = "estado_civil", nullable = false)
+    private String estadoCivil;
+
+    @Column(nullable = false)
+    private String email;
+
+    @Column(nullable = false)
+    private String cpf;
+
+    @Column(nullable = false)
+    private String rg;
+
+    @Column(nullable = false)
+    private String naturalidade;
+
+    @Column(nullable = true)
+    private String cep;
+
+    @Column(nullable = true)
+    private String logadouro;
+
+    @Column(nullable = true)
+    private String numero;
+
+    @Column(nullable = true)
+    private String cidade;
+
+    @Column(nullable = true)
+    private String complemento;
+
+
     @ManyToOne
     @JoinColumn(name = "id_usuario")
     @NotNull(message = "É necessário um Usuário Valido para cadastrar um Aluno")
-    @JsonBackReference
+    @JsonIgnoreProperties("usuario")
     private UsuarioEntity usuario;
 
     @ManyToOne
     @JoinColumn(name = "id_turma")
-    @JsonBackReference
+    @JsonIgnoreProperties("turma")
     private TurmaEntity turma;
+
+
+    @OneToMany(mappedBy = "aluno", fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
+    @JsonBackReference
+    private List<NotaEntity> notas;
+
 }
